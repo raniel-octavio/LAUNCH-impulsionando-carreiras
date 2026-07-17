@@ -1,0 +1,202 @@
+@import "tailwindcss";
+
+:root {
+  /* Balanced sophisticated — neither washed-out nor pure black */
+  --launch-void: #e9eef5;
+  --launch-ink: #dfe7f1;
+  --launch-surface: #ffffff;
+  --launch-elevated: #f4f7fb;
+  --launch-border: #c5d0de;
+  --launch-gold: #1b7fbf;
+  --launch-gold-bright: #2493d9;
+  --launch-gold-dim: #135a8a;
+  --launch-muted: #5a6b7d;
+  --launch-soft: #3d4f63;
+  --launch-white: #122033;
+  --background: #e9eef5;
+  --foreground: #122033;
+
+  --alvo-navy: #122033;
+  --alvo-navy-light: #1c334d;
+  --alvo-bronze: #1b7fbf;
+  --alvo-copper: #2493d9;
+  --alvo-rose: #b76e79;
+  --alvo-silver: #5a6b7d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-launch-void: var(--launch-void);
+  --color-launch-ink: var(--launch-ink);
+  --color-launch-surface: var(--launch-surface);
+  --color-launch-elevated: var(--launch-elevated);
+  --color-launch-border: var(--launch-border);
+  --color-launch-gold: var(--launch-gold);
+  --color-launch-gold-bright: var(--launch-gold-bright);
+  --color-launch-gold-dim: var(--launch-gold-dim);
+  --color-launch-muted: var(--launch-muted);
+  --color-launch-soft: var(--launch-soft);
+  --color-launch-white: var(--launch-white);
+  --color-alvo-navy: var(--alvo-navy);
+  --color-alvo-navy-light: var(--alvo-navy-light);
+  --color-alvo-bronze: var(--alvo-bronze);
+  --color-alvo-copper: var(--alvo-copper);
+  --color-alvo-rose: var(--alvo-rose);
+  --color-alvo-silver: var(--alvo-silver);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1b7fbf50;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1b7fbf80;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(27, 127, 191, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 28px 6px rgba(27, 127, 191, 0.2);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease both;
+}
+
+.animate-float {
+  animation: float-soft 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+.delay-200 {
+  animation-delay: 0.2s;
+}
+.delay-300 {
+  animation-delay: 0.3s;
+}
+.delay-400 {
+  animation-delay: 0.4s;
+}
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* Hero: image visible + sophisticated blue-slate veil (like reference) */
+.hero-mesh {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18, 32, 51, 0.55) 0%,
+      rgba(18, 32, 51, 0.45) 45%,
+      rgba(18, 32, 51, 0.72) 100%
+    );
+}
+
+.hero-image-veil {
+  opacity: 1;
+  filter: saturate(1.05) contrast(1.05);
+}
+
+.card-glass {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(18, 32, 51, 0.1);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 36px rgba(18, 32, 51, 0.07);
+}
+
+.job-panel {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
+  box-shadow: 0 14px 44px rgba(18, 32, 51, 0.14);
+}
+
+.job-panel:hover {
+  transform: scale(1.02);
+  filter: brightness(1.08);
+}
+
+.job-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(18, 32, 51, 0.2) 0%, rgba(18, 32, 51, 0.78) 100%);
+  pointer-events: none;
+}
+
+.section-rich {
+  background:
+    linear-gradient(135deg, #122033 0%, #1c334d 55%, #135a8a 100%);
+}
+
+.text-vertical {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
