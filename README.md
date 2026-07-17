@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # ALVO RH — Rede Social (Next.js)
 
 Plataforma profissional tipo LinkedIn para a **ALVO RH**, construída com **Next.js puro**:
@@ -51,3 +52,6 @@ src/
 =======
 # RH-Solucao-em-gestao-de-pessoas
 >>>>>>> b7f70c8a65e305e5215a5aad8584080355b64dbb
+=======
+# LAUNCH-impulsionando-carreiras
+>>>>>>> bef21ca7d7444d4055dea01b8999578694c411b8
