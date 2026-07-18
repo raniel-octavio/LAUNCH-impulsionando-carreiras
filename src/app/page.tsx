@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { getJobs } from "@/lib/store";
+<script src="https://sdk.canva.com/v1/sdk.js"></script>
 
 const specialties = [
   { icon: Target, label: "MATCH INTELIGENTE" },
