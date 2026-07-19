@@ -23,11 +23,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  modal,
+}: Readonly<{
+  children: React.ReactNode;
+  modal: React.ReactNode;
+}>) {
   return (
     <html lang="pt-BR" className={`${outfit.variable} ${syne.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-launch-void text-launch-white">
         <AppChrome>{children}</AppChrome>
+        {modal}
       </body>
     </html>
   );
