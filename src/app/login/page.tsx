@@ -1,14 +1,12 @@
+"use client";
+
 import { Logo } from "@/components/ui/Logo";
-import { LoginForm } from "@/components/auth/LoginForm";
+import { useAuthModal } from "@/hooks/useAuthModal";
 
 const HERO_IMAGE = "/home.png";
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ callbackUrl?: string }>;
-}) {
-  const { callbackUrl } = await searchParams;
+export default function LoginPage() {
+  const { open, Modal } = useAuthModal();
 
   return (
     <div className="relative min-h-screen flex flex-col bg-launch-void text-launch-white overflow-x-hidden">
@@ -25,24 +23,17 @@ export default async function LoginPage({
       </header>
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-16">
-        <p className="animate-fade-up text-[11px] tracking-[0.45em] uppercase text-sky-200/90 mb-5">
-          Bem-vindo de volta
-        </p>
-        <h2 className="animate-fade-up delay-100 font-display text-2xl sm:text-3xl font-extrabold tracking-[0.03em] uppercase leading-tight text-white mb-10 text-center">
-          Entre na sua conta
-        </h2>
+        <h2 className="text-white text-2xl font-bold mb-10">Entre na sua conta</h2>
 
-        <div className="animate-fade-up delay-200 w-full max-w-md rounded-lg border border-white/15 bg-white/8 backdrop-blur-xl p-8 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-          <LoginForm callbackUrl={callbackUrl || "/"} />
-        </div>
-
-        <a
-          href="/"
-          className="animate-fade-up delay-300 mt-8 inline-flex items-center gap-2 text-xs tracking-[0.18em] uppercase text-white/50 hover:text-white transition-colors"
+        <button
+          onClick={open}
+          className="px-6 py-3 bg-sky-600 text-white rounded hover:bg-sky-500 transition"
         >
-          Voltar ao início
-        </a>
+          Abrir login
+        </button>
       </div>
+
+      {Modal}
     </div>
   );
 }

@@ -1,15 +1,20 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Navbar } from "@/components/layout/Navbar";
 
-export function AppChrome({ children }: { children: React.ReactNode }) {
+export function AppChrome({
+  children,
+  navbar,
+}: {
+  children: React.ReactNode;
+  navbar: React.ReactNode;
+}) {
   const pathname = usePathname();
   const isLanding = pathname === "/";
 
   return (
     <>
-      {!isLanding && <Navbar />}
+      {!isLanding && navbar}
       <main className="flex-1">{children}</main>
     </>
   );

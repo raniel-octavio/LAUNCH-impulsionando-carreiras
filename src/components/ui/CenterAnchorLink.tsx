@@ -15,7 +15,7 @@ export function CenterAnchorLink({
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
-      history.pushState(null, "", href);
+      history.replaceState(null, "", href); // não empilha entrada nova
     }
   }
 

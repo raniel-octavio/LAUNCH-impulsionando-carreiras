@@ -101,12 +101,11 @@ export default function LandingPage() {
         {/* Nav */}
         <header className="relative z-20 flex items-center justify-between px-5 sm:px-8 lg:px-14 py-6 animate-fade-in">
           <Logo size="md" tone="light" />
-          <nav className="hidden md:flex items-center gap-8 text-[11px] tracking-[0.22em] uppercase text-white/85">
+
+          <nav className="hidden md:flex items-center gap-8 text-[11px] tracking-[0.22em] uppercase text-white/85 absolute left-1/2 -translate-x-1/2">
             <a href="#sobre" className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
               Sobre
             </a>
-            {/* Vagas usa scroll centralizado de verdade (scrollIntoView block: center),
-                não o comportamento padrão de âncora que só alinha pelo topo */}
             <CenterAnchorLink href="#vagas" className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
               Vagas
             </CenterAnchorLink>
@@ -117,18 +116,13 @@ export default function LandingPage() {
               Contatos
             </Link>
           </nav>
+
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
-              href="/registro?role=member"
-              className={`hidden sm:inline-flex text-[11px] tracking-[0.18em] uppercase text-white/80 hover:text-white transition-colors px-3 py-2 rounded-sm ${focusRing}`}
-            >
-              Membro
-            </Link>
-            <Link
-              href="/registro?role=recruiter"
+              href="/login"
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-sm border border-white/40 text-white text-[11px] font-semibold tracking-[0.14em] uppercase hover:bg-white hover:text-slate-900 transition-all ${focusRing}`}
             >
-              Recrutador
+              Entrar
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -227,7 +221,7 @@ export default function LandingPage() {
         <Reveal delayMs={160}>
           <div className="max-w-7xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
             <Link
-              href="/registro?role=member"
+              href="/login?callbackUrl=/feed"
               className={`group relative overflow-hidden rounded-sm p-8 min-h-[200px] flex flex-col justify-end text-white ${focusRing}`}
             >
               <div
@@ -251,7 +245,7 @@ export default function LandingPage() {
             </Link>
 
             <Link
-              href="/registro?role=recruiter"
+              href="/login?callbackUrl=/vagas"
               className={`group relative overflow-hidden rounded-sm p-8 min-h-[200px] flex flex-col justify-end text-white ${focusRing}`}
             >
               <div

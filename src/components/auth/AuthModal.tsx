@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 
@@ -9,20 +8,18 @@ export function AuthModal({
   eyebrow,
   title,
   children,
+  onClose,
 }: {
   eyebrow: string;
   title: string;
   children: React.ReactNode;
+  onClose: () => void;
 }) {
-  const router = useRouter();
-
-  const close = useCallback(() => {
-    router.back();
-  }, [router]);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") triggerClose();
     }
     document.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden";
@@ -30,19 +27,32 @@ export function AuthModal({
       document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
     };
-  }, [close]);
+  }, []);
+
+  function triggerClose() {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose(); // SEMPRE vem do hook
+    }, 300);
+  }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-6 bg-black/70 backdrop-blur-sm animate-fade-in"
+      className={`fixed inset-0 z-50 flex items-center justify-center px-6 bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
+        isClosing ? "opacity-0" : "opacity-100"
+      }`}
       onClick={(e) => {
-        if (e.target === e.currentTarget) close();
+        if (e.target === e.currentTarget) triggerClose();
       }}
     >
-      <div className="relative w-full max-w-md animate-fade-up">
+      <div
+        className={`relative w-full max-w-md transform transition-all duration-300 ${
+          isClosing ? "opacity-0 scale-95" : "opacity-100 scale-100"
+        }`}
+      >
         <button
           type="button"
-          onClick={close}
+          onClick={triggerClose}
           aria-label="Fechar"
           className="absolute -top-12 right-0 text-white/60 hover:text-white transition-colors"
         >
