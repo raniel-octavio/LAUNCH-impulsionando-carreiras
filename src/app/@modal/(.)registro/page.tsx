@@ -1,10 +1,11 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { RegistroForm } from "@/components/auth/RegistroForm";
 
-export default function RegistroModal() {
+function RegistroModalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const role = searchParams.get("role");
@@ -18,5 +19,13 @@ export default function RegistroModal() {
     >
       <RegistroForm hintedRole={hintedRole} />
     </AuthModal>
+  );
+}
+
+export default function RegistroModal() {
+  return (
+    <Suspense fallback={null}>
+      <RegistroModalContent />
+    </Suspense>
   );
 }
