@@ -1,25 +1,26 @@
+// app/@modal/(.)login/page.tsx
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-export default function LoginModal({
-  searchParams,
-}: {
-  searchParams: Promise<{ callbackUrl?: string }>;
-}) {
+export default function LoginModal() {
   const router = useRouter();
-  // Como searchParams agora é assíncrono, e este componente virou client,
-  // você precisa ajustar como pega o callbackUrl (ver nota abaixo)
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+
+  function handleClose() {
+    router.push("/");
+  }
 
   return (
     <AuthModal
       eyebrow="Bem-vindo de volta"
       title="Entre na sua conta"
-      onClose={() => router.back()}
+      onClose={handleClose}
     >
-      <LoginForm callbackUrl={"/"} />
+      <LoginForm callbackUrl={callbackUrl} />
     </AuthModal>
   );
 }

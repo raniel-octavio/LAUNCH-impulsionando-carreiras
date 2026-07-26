@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 
@@ -16,6 +16,7 @@ export function AuthModal({
   onClose: () => void;
 }) {
   const [isClosing, setIsClosing] = useState(false);
+  const hasClosedRef = useRef(false);
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -30,16 +31,20 @@ export function AuthModal({
   }, []);
 
   function triggerClose() {
+    if (hasClosedRef.current) return;
+    hasClosedRef.current = true;
+
     setIsClosing(true);
+    document.body.style.overflow = ""; // limpa já, não espera o unmount
     setTimeout(() => {
-      onClose(); // SEMPRE vem do hook
+      onClose();
     }, 300);
   }
 
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center px-6 bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
-        isClosing ? "opacity-0" : "opacity-100"
+        isClosing ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       onClick={(e) => {
         if (e.target === e.currentTarget) triggerClose();
