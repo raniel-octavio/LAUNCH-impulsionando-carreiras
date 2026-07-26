@@ -12,7 +12,7 @@ function RegistroModalContent() {
   const hintedRole = role === "member" || role === "recruiter" ? role : null;
 
   function handleClose() {
-    router.push("/");
+    router.back();
   }
 
   return (

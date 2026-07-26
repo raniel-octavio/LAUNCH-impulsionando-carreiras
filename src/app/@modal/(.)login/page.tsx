@@ -11,7 +11,7 @@ function LoginModalContent() {
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   function handleClose() {
-    router.push("/");
+    router.back();
   }
 
   return (
