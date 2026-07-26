@@ -1,12 +1,16 @@
+// app/login/page.tsx
 "use client";
 
+import { Suspense } from "react";
 import { Logo } from "@/components/ui/Logo";
-import { useAuthModal } from "@/hooks/useAuthModal";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { useSearchParams } from "next/navigation";
 
 const HERO_IMAGE = "/home.png";
 
-export default function LoginPage() {
-  const { open, Modal } = useAuthModal();
+function LoginPageContent() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   return (
     <div className="relative min-h-screen flex flex-col bg-launch-void text-launch-white overflow-x-hidden">
@@ -23,17 +27,22 @@ export default function LoginPage() {
       </header>
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-16">
-        <h2 className="text-white text-2xl font-bold mb-10">Entre na sua conta</h2>
-
-        <button
-          onClick={open}
-          className="px-6 py-3 bg-sky-600 text-white rounded hover:bg-sky-500 transition"
-        >
-          Abrir login
-        </button>
+        <p className="text-[11px] tracking-[0.45em] uppercase text-sky-200/90 mb-3">Bem-vindo de volta</p>
+        <h2 className="font-display text-2xl sm:text-3xl font-extrabold uppercase text-white mb-10">
+          Entre na sua conta
+        </h2>
+        <div className="w-full max-w-md rounded-lg border border-white/15 bg-white/8 backdrop-blur-xl p-8">
+          <LoginForm callbackUrl={callbackUrl} />
+        </div>
       </div>
-
-      {Modal}
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
   );
 }
