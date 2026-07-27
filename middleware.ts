@@ -16,7 +16,9 @@ const protectedPaths = [
 
 const authOnlyPaths = ["/login", "/registro"];
 
-// Rotas restritas por papel específico
+// Rotas onde NÃO forçamos checagem de perfil (senão vira loop de redirect)
+const onboardingExemptPaths = ["/onboarding", "/auth"];
+
 const roleRestrictedPaths: { prefix: string; allowedRoles: string[] }[] = [
   { prefix: "/membro", allowedRoles: ["candidato"] },
   { prefix: "/recrutador", allowedRoles: ["recrutador", "empresa"] },
@@ -53,6 +55,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isProtected = protectedPaths.some((p) => path.startsWith(p));
   const isAuthOnly = authOnlyPaths.some((p) => path.startsWith(p));
+  const isOnboardingExempt = onboardingExemptPaths.some((p) => path.startsWith(p));
 
   if (isProtected && !user) {
     const redirectUrl = new URL("/login", request.url);
@@ -60,22 +63,34 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
+  // Sessão existe? Confere se o cadastro (linha em "users") foi concluído.
+  // Se não foi, força completar o onboarding antes de qualquer outra coisa.
+  let profile: { role: string } | null = null;
+
+  if (user && !isOnboardingExempt) {
+    const { data } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    profile = data;
+
+    if (!profile) {
+      const onboardingUrl = new URL("/onboarding/completar", request.url);
+      onboardingUrl.searchParams.set("returnTo", path);
+      return NextResponse.redirect(onboardingUrl);
+    }
+  }
+
   if (isAuthOnly && user) {
     return NextResponse.redirect(new URL("/feed", request.url));
   }
 
-  if (user) {
+  if (user && profile) {
     const roleRule = roleRestrictedPaths.find((r) => path.startsWith(r.prefix));
-    if (roleRule) {
-      const { data: profile } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (profile && !roleRule.allowedRoles.includes(profile.role)) {
-        return NextResponse.redirect(new URL("/", request.url));
-      }
+    if (roleRule && !roleRule.allowedRoles.includes(profile.role)) {
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
