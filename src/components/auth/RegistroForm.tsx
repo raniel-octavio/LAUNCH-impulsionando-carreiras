@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { signInWithGoogle } from "@/lib/auth";
+import { supabase } from "@/lib/supabaseClient";
+import { createUser } from "@/lib/api/users";
 import { UserRound, Building2 } from "lucide-react";
 import { maskPhoneBR, isValidPhoneBR } from "@/lib/phone";
+import { useRouter } from "next/navigation";
 
 type Role = "member" | "recruiter";
 
@@ -13,6 +15,7 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
   const [role, setRole] = useState<Role | null>(hintedRole ?? null);
   const [touched, setTouched] = useState(false);
   const [consent, setConsent] = useState(false);
+  const router = useRouter();
 
   const phoneError = useMemo(() => {
     if (!touched || phone.length === 0) return null;
@@ -33,53 +36,76 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
     if (!canContinue) return;
 
     try {
-      await signInWithGoogle({
-        onboardingData: {
-          name: name.trim(),
-          phone,
-          role: role as string,
-        },
+      // 1. Autentica com Google
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: "/" }, // volta para home ou feed
       });
+
+      if (error) throw error;
+
+      // 2. Recupera usuário autenticado
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // 3. Cria perfil manualmente com dados do formulário
+      await createUser({
+        id: user.id,
+        name: name.trim(),
+        headline: "",
+        avatar: user.user_metadata?.avatar_url ?? "",
+        role: role === "recruiter" ? "recrutador" : "candidato",
+        location: "",
+        about: "",
+        skills: [],
+        email: user.email!,
+        phone,
+      });
+
+      // 4. Redireciona para feed
+      router.push("/feed");
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao registrar:", err);
     }
   }
 
   return (
     <div className="w-full min-w-0">
+      {/* Escolha de role */}
       <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-5 sm:mb-6">
         <button
           type="button"
           onClick={() => setRole("member")}
-          className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 min-w-0 transition-all ${
+          className={`flex flex-col items-center justify-center gap-2 rounded-sm border px-4 py-4 transition-all ${
             role === "member"
               ? "border-sky-300 bg-sky-300/15 text-white"
               : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85"
           }`}
         >
-          <UserRound className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" strokeWidth={1.5} />
-          <span className="text-[9.5px] sm:text-[11px] tracking-[0.06em] sm:tracking-[0.14em] uppercase text-center leading-tight break-words">
+          <UserRound className="w-5 h-5 shrink-0" strokeWidth={1.5} />
+          <span className="text-[11px] uppercase text-center leading-tight">
             Sou candidato
           </span>
         </button>
         <button
           type="button"
           onClick={() => setRole("recruiter")}
-          className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 min-w-0 transition-all ${
+          className={`flex flex-col items-center justify-center gap-2 rounded-sm border px-4 py-4 transition-all ${
             role === "recruiter"
               ? "border-sky-300 bg-sky-300/15 text-white"
               : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85"
           }`}
         >
-          <Building2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" strokeWidth={1.5} />
-          <span className="text-[9.5px] sm:text-[11px] tracking-[0.06em] sm:tracking-[0.14em] uppercase text-center leading-tight break-words">
+          <Building2 className="w-5 h-5 shrink-0" strokeWidth={1.5} />
+          <span className="text-[11px] uppercase text-center leading-tight">
             Sou recrutador
           </span>
         </button>
       </div>
 
+      {/* Nome */}
       <div className="mb-4">
-        <label className="block text-[10px] tracking-[0.2em] uppercase text-white/60 mb-2">
+        <label className="block text-[10px] uppercase text-white/60 mb-2">
           Nome completo
         </label>
         <input
@@ -87,12 +113,13 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Seu nome completo"
-          className="w-full min-w-0 bg-white/5 border border-white/20 rounded-sm px-3 sm:px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-sky-300/70 focus:bg-white/8 transition-colors"
+          className="w-full bg-white/5 border border-white/20 rounded-sm px-3 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-sky-300/70 focus:bg-white/8"
         />
       </div>
 
+      {/* Telefone */}
       <div className="mb-4">
-        <label className="block text-[10px] tracking-[0.2em] uppercase text-white/60 mb-2">
+        <label className="block text-[10px] uppercase text-white/60 mb-2">
           Telefone
         </label>
         <input
@@ -102,7 +129,7 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
           onChange={handlePhoneChange}
           onBlur={() => setTouched(true)}
           placeholder="(11) 98888-7777"
-          className={`w-full min-w-0 bg-white/5 border rounded-sm px-3 sm:px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none transition-colors ${
+          className={`w-full bg-white/5 border rounded-sm px-3 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none ${
             phoneError
               ? "border-red-400/60 focus:border-red-400"
               : "border-white/20 focus:border-sky-300/70 focus:bg-white/8"
@@ -113,43 +140,40 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
         )}
       </div>
 
-      <label className="flex items-start gap-2.5 mb-2 cursor-pointer group">
+      {/* Consentimento */}
+      <label className="flex items-start gap-2.5 mb-2 cursor-pointer">
         <input
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-0.5 w-4 h-4 shrink-0 rounded-sm border-white/30 bg-white/5 accent-sky-300"
+          className="mt-0.5 w-4 h-4 rounded-sm border-white/30 bg-white/5 accent-sky-300"
         />
         <span className="text-[11px] text-white/60 leading-relaxed">
           Li e aceito a{" "}
-          <a
-            href="/privacidade"
-            target="_blank"
-            className="text-sky-200 hover:text-white underline underline-offset-2"
-          >
+          <a href="/privacidade" target="_blank" className="text-sky-200 hover:text-white underline">
             Política de Privacidade
           </a>{" "}
           e autorizo o uso dos meus dados para fins de recrutamento.
         </span>
       </label>
 
+      {/* Botão Google */}
       <button
         type="button"
         disabled={!canContinue}
         onClick={handleGoogleContinue}
-        className="mt-5 w-full inline-flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3.5 rounded-sm bg-white text-slate-900 text-sm font-semibold tracking-[0.08em] disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:bg-white/90 transition-all"
+        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-sm bg-white text-slate-900 text-sm font-semibold disabled:opacity-40 hover:bg-white/90"
       >
         <GoogleIcon className="w-4 h-4 shrink-0" />
         Continuar com Google
       </button>
 
-      <p className="mt-4 text-center text-[11px] text-white/45 leading-relaxed">
+      <p className="mt-4 text-center text-[11px] text-white/45">
         Seu e-mail do Google será usado para identificar sua conta.
       </p>
     </div>
-  );
+);
 }
-
 function GoogleIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24">
