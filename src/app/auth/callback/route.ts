@@ -7,6 +7,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next");
+  const returnTo = searchParams.get("returnTo");
 
   if (code) {
     const cookieStore = await cookies();
@@ -30,10 +31,7 @@ export async function GET(request: Request) {
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
-      if (next) {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
-
+      // Verifica SEMPRE se o perfil já existe
       const { data: profile } = await supabase
         .from("users")
         .select("id")
@@ -41,9 +39,11 @@ export async function GET(request: Request) {
         .single();
 
       if (profile) {
-        return NextResponse.redirect(`${origin}/`);
+        // Já tem conta → vai pro destino pós-login (ou home)
+        return NextResponse.redirect(`${origin}${returnTo || "/"}`);
       } else {
-        return NextResponse.redirect(`${origin}/onboarding/completar`);
+        // Não tem conta ainda → vai pro onboarding (com dados prontos, se vieram)
+        return NextResponse.redirect(`${origin}${next || "/onboarding/completar"}`);
       }
     }
 
