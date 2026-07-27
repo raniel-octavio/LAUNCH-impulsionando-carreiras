@@ -30,12 +30,10 @@ export async function GET(request: Request) {
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
-      // Veio de um fluxo com destino explícito (ex: RegistroForm com dados prontos)
       if (next) {
         return NextResponse.redirect(`${origin}${next}`);
       }
 
-      // Login comum: verifica se já existe perfil
       const { data: profile } = await supabase
         .from("users")
         .select("id")
@@ -48,7 +46,12 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}/onboarding/completar`);
       }
     }
+
+    console.error("Erro na troca de código:", error);
+    return NextResponse.redirect(
+      `${origin}/auth/error?message=${encodeURIComponent(error?.message ?? "erro desconhecido")}`
+    );
   }
 
-  return NextResponse.redirect(`${origin}/auth/error`);
+  return NextResponse.redirect(`${origin}/auth/error?message=${encodeURIComponent("nenhum código recebido")}`);
 }
