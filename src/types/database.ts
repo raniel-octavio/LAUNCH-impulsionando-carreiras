@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       conversation_participants: {
@@ -33,6 +58,13 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_public_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -110,6 +142,13 @@ export type Database = {
             foreignKeyName: "jobs_posted_by_fkey"
             columns: ["posted_by"]
             isOneToOne: false
+            referencedRelation: "user_public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_posted_by_fkey"
+            columns: ["posted_by"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -146,6 +185,13 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "user_public_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -192,6 +238,13 @@ export type Database = {
           shares?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "user_public_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "posts_author_id_fkey"
             columns: ["author_id"]
@@ -296,7 +349,78 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_public_profiles: {
+        Row: {
+          about: string | null
+          achievements: string[] | null
+          avatar: string | null
+          certifications: string[] | null
+          company: string | null
+          connections: number | null
+          courses: string[] | null
+          desired_position: string | null
+          education: string | null
+          experience: string | null
+          github: string | null
+          headline: string | null
+          id: string | null
+          languages: string[] | null
+          linkedin: string | null
+          location: string | null
+          name: string | null
+          online: boolean | null
+          portfolio: string | null
+          role: string | null
+          skills: string[] | null
+        }
+        Insert: {
+          about?: string | null
+          achievements?: string[] | null
+          avatar?: string | null
+          certifications?: string[] | null
+          company?: string | null
+          connections?: number | null
+          courses?: string[] | null
+          desired_position?: string | null
+          education?: string | null
+          experience?: string | null
+          github?: string | null
+          headline?: string | null
+          id?: string | null
+          languages?: string[] | null
+          linkedin?: string | null
+          location?: string | null
+          name?: string | null
+          online?: boolean | null
+          portfolio?: string | null
+          role?: string | null
+          skills?: string[] | null
+        }
+        Update: {
+          about?: string | null
+          achievements?: string[] | null
+          avatar?: string | null
+          certifications?: string[] | null
+          company?: string | null
+          connections?: number | null
+          courses?: string[] | null
+          desired_position?: string | null
+          education?: string | null
+          experience?: string | null
+          github?: string | null
+          headline?: string | null
+          id?: string | null
+          languages?: string[] | null
+          linkedin?: string | null
+          location?: string | null
+          name?: string | null
+          online?: boolean | null
+          portfolio?: string | null
+          role?: string | null
+          skills?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
@@ -428,6 +552,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

@@ -7,7 +7,6 @@ import { supabase } from "@/lib/supabaseClient";
 import { createUser, getUserById } from "@/lib/api/users";
 import { UserRole } from "@/types";
 
-// Traduz o role do formulário (member/recruiter) pro role do banco
 function mapFormRole(formRole: string | null): UserRole {
   if (formRole === "recruiter") return "recrutador";
   return "candidato";
@@ -22,6 +21,7 @@ function CompletarCadastroContent() {
   useEffect(() => {
     async function completeSignup() {
       const { data: { user } } = await supabase.auth.getUser();
+      const returnTo = searchParams.get("returnTo") || "/";
 
       if (!user) {
         router.push("/login");
@@ -30,7 +30,7 @@ function CompletarCadastroContent() {
 
       const existingProfile = await getUserById(user.id);
       if (existingProfile) {
-        router.push("/");
+        router.push(returnTo);
         return;
       }
 
@@ -58,7 +58,7 @@ function CompletarCadastroContent() {
           phone,
         });
 
-        router.push("/");
+        router.push(returnTo);
       } catch (err) {
         console.error("Erro ao completar cadastro:", err);
         setStatus("error");

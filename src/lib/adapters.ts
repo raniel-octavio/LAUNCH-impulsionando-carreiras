@@ -1,13 +1,39 @@
 // src/lib/adapters.ts
 import { Database } from "@/types/database";
-import { User, Post, Job, Message, Conversation, UserRole } from "@/types";
+import { User, Post, Job, Message, Conversation, UserRole, PublicUser } from "@/types";
 
 type DbUser = Database["public"]["Tables"]["users"]["Row"];
 type DbPost = Database["public"]["Tables"]["posts"]["Row"];
 type DbJob = Database["public"]["Tables"]["jobs"]["Row"];
 type DbMessage = Database["public"]["Tables"]["messages"]["Row"];
 type DbConversation = Database["public"]["Tables"]["conversations"]["Row"];
+type DbPublicUser = Database["public"]["Views"]["user_public_profiles"]["Row"];
 
+export function mapPublicUser(db: DbPublicUser): PublicUser {
+  return {
+    id: db.id ?? "",
+    name: db.name ?? "",
+    headline: db.headline ?? "",
+    avatar: db.avatar ?? "",
+    role: (db.role ?? "candidato") as UserRole,
+    company: db.company ?? undefined,
+    location: db.location ?? "",
+    connections: db.connections ?? 0,
+    about: db.about ?? "",
+    skills: db.skills ?? [],
+    education: db.education ?? undefined,
+    experience: db.experience ?? undefined,
+    certifications: db.certifications ?? undefined,
+    languages: db.languages ?? undefined,
+    linkedin: db.linkedin ?? undefined,
+    desiredPosition: db.desired_position ?? undefined,
+    portfolio: db.portfolio ?? undefined,
+    github: db.github ?? undefined,
+    courses: db.courses ?? undefined,
+    achievements: db.achievements ?? undefined,
+    online: db.online ?? false,
+  };
+}
 // ============================================
 // USER
 // ============================================

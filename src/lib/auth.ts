@@ -1,10 +1,27 @@
 // src/lib/auth.ts
 import { supabase } from "@/lib/supabaseClient";
 
-export async function signInWithGoogle(redirectPath: string = "/auth/callback") {
-  const redirectTo = redirectPath.startsWith("/auth/callback")
-    ? `${window.location.origin}${redirectPath}`
-    : `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`;
+interface SignInOptions {
+  returnTo?: string; // pra onde voltar após o login (ou após o onboarding)
+  onboardingData?: {
+    name: string;
+    phone: string;
+    role: string;
+  };
+}
+
+export async function signInWithGoogle(options: SignInOptions = {}) {
+  const params = new URLSearchParams();
+
+  if (options.returnTo) params.set("returnTo", options.returnTo);
+  if (options.onboardingData) {
+    params.set("name", options.onboardingData.name);
+    params.set("phone", options.onboardingData.phone);
+    params.set("role", options.onboardingData.role);
+  }
+
+  const query = params.toString();
+  const redirectTo = `${window.location.origin}/auth/callback${query ? `?${query}` : ""}`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",

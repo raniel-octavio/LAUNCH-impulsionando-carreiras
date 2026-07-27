@@ -5,7 +5,7 @@ import { signInWithGoogle } from "@/lib/auth";
 export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
   async function handleGoogleLogin() {
     try {
-      await signInWithGoogle(callbackUrl);
+      await signInWithGoogle({ returnTo: callbackUrl });
     } catch (err) {
       console.error(err);
     }

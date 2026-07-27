@@ -31,15 +31,15 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
 
   async function handleGoogleContinue() {
     if (!canContinue) return;
-    const params = new URLSearchParams({
-      name: name.trim(),
-      phone,
-      role: role as string,
-    });
-    const redirectPath = "/onboarding/completar?" + params.toString();
 
     try {
-      await signInWithGoogle(redirectPath);
+      await signInWithGoogle({
+        onboardingData: {
+          name: name.trim(),
+          phone,
+          role: role as string,
+        },
+      });
     } catch (err) {
       console.error(err);
     }

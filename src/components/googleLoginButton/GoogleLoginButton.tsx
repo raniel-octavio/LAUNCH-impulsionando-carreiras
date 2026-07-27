@@ -3,10 +3,10 @@
 
 import { signInWithGoogle } from "@/lib/auth";
 
-export default function GoogleLoginButton() {
+export default function GoogleLoginButton({ returnTo }: { returnTo?: string }) {
   async function handleLogin() {
     try {
-      await signInWithGoogle();
+      await signInWithGoogle({ returnTo });
     } catch (err) {
       console.error(err);
     }

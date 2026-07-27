@@ -2,7 +2,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Rotas que exigem login
 const protectedPaths = [
   "/feed",
   "/perfil",
@@ -15,8 +14,13 @@ const protectedPaths = [
   "/recrutador",
 ];
 
-// Rotas só para quem NÃO está logado (evita logado ver tela de login de novo)
 const authOnlyPaths = ["/login", "/registro"];
+
+// Rotas restritas por papel específico
+const roleRestrictedPaths: { prefix: string; allowedRoles: string[] }[] = [
+  { prefix: "/membro", allowedRoles: ["candidato"] },
+  { prefix: "/recrutador", allowedRoles: ["recrutador", "empresa"] },
+];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -58,6 +62,21 @@ export async function middleware(request: NextRequest) {
 
   if (isAuthOnly && user) {
     return NextResponse.redirect(new URL("/feed", request.url));
+  }
+
+  if (user) {
+    const roleRule = roleRestrictedPaths.find((r) => path.startsWith(r.prefix));
+    if (roleRule) {
+      const { data: profile } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (profile && !roleRule.allowedRoles.includes(profile.role)) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    }
   }
 
   return response;

@@ -1,27 +1,48 @@
 // src/lib/api/users.ts
 import { supabase } from "@/lib/supabaseClient";
-import { mapUser, mapUserToInsert } from "@/lib/adapters";
-import { User } from "@/types";
+import { mapUser, mapUserToInsert, mapPublicUser } from "@/lib/adapters";
+import { User, PublicUser } from "@/types";
 import { Database } from "@/types/database";
 
 type UserUpdate = Database["public"]["Tables"]["users"]["Update"];
 
 // ============================================
-// Busca todos os usuários
+// Lista usuários — SEM dados sensíveis (busca de rede, feed, etc.)
 // ============================================
-export async function getUsers(): Promise<User[]> {
-  const { data, error } = await supabase.from("users").select("*");
+export async function getUsers(): Promise<PublicUser[]> {
+  const { data, error } = await supabase.from("user_public_profiles").select("*");
 
   if (error) {
     console.error("Erro ao buscar usuários:", error);
     throw error;
   }
 
-  return data.map(mapUser);
+  return data.map(mapPublicUser);
 }
 
 // ============================================
-// Busca um usuário específico pelo id
+// Busca o perfil PÚBLICO de qualquer usuário (não traz email/phone/etc.)
+// Use isso pra ver o perfil de OUTRA pessoa
+// ============================================
+export async function getPublicProfile(id: string): Promise<PublicUser | null> {
+  const { data, error } = await supabase
+    .from("user_public_profiles")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("Erro ao buscar perfil público:", error);
+    return null;
+  }
+
+  return mapPublicUser(data);
+}
+
+// ============================================
+// Busca o perfil COMPLETO — só funciona pra ver o PRÓPRIO perfil,
+// porque a policy do banco só libera a linha inteira pro dono.
+// Use isso em useCurrentUser / telas de "editar meu perfil".
 // ============================================
 export async function getUserById(id: string): Promise<User | null> {
   const { data, error } = await supabase
