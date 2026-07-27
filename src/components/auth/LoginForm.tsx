@@ -1,10 +1,14 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { signInWithGoogle } from "@/lib/auth";
 
 export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
-  function handleGoogleLogin() {
-    signIn("google", { callbackUrl });
+  async function handleGoogleLogin() {
+    try {
+      await signInWithGoogle(callbackUrl);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Syne } from "next/font/google";
 import { AppChrome } from "@/components/layout/AppChrome";
 import { Navbar } from "@/components/layout/Navbar";
-import { AuthSessionProvider } from "@/components/providers/AuthSessionProvider";
+import { SupabaseAuthProvider } from "@/components/providers/SupabaseAuthProvider";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -33,10 +33,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${outfit.variable} ${syne.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-launch-void text-launch-white">
-        <AuthSessionProvider>
+        <SupabaseAuthProvider>
           <AppChrome navbar={<Navbar />}>{children}</AppChrome>
           {modal}
-        </AuthSessionProvider>
+        </SupabaseAuthProvider>
       </body>
     </html>
   );
