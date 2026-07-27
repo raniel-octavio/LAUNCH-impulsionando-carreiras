@@ -1,7 +1,7 @@
 // src/app/onboarding/completar/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { createUser, getUserById } from "@/lib/api/users";
@@ -13,7 +13,7 @@ function mapFormRole(formRole: string | null): UserRole {
   return "candidato";
 }
 
-export default function CompletarCadastroPage() {
+function CompletarCadastroContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "error">("loading");
@@ -28,7 +28,6 @@ export default function CompletarCadastroPage() {
         return;
       }
 
-      // Já existe perfil? (evita duplicar se a pessoa recarregar a página)
       const existingProfile = await getUserById(user.id);
       if (existingProfile) {
         router.push("/");
@@ -83,5 +82,13 @@ export default function CompletarCadastroPage() {
     <div style={{ padding: 40, textAlign: "center" }}>
       <p>Concluindo seu cadastro...</p>
     </div>
+  );
+}
+
+export default function CompletarCadastroPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 40, textAlign: "center" }}><p>Carregando...</p></div>}>
+      <CompletarCadastroContent />
+    </Suspense>
   );
 }
