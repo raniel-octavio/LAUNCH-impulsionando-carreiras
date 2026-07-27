@@ -21,7 +21,10 @@ function CompletarCadastroContent() {
   useEffect(() => {
     async function completeSignup() {
       const { data: { user } } = await supabase.auth.getUser();
-      const returnTo = searchParams.get("returnTo") || "/";
+      const rawReturnTo = searchParams.get("returnTo");
+      const returnTo = rawReturnTo && rawReturnTo.startsWith("/") && !rawReturnTo.startsWith("//")
+        ? rawReturnTo
+        : "/";
 
       if (!user) {
         router.push("/login");

@@ -3,10 +3,17 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
+// Só aceita caminhos internos (começam com "/" mas não com "//")
+function safeRedirectPath(path: string | null): string {
+  if (!path) return "/";
+  if (!path.startsWith("/") || path.startsWith("//")) return "/";
+  return path;
+}
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const returnTo = searchParams.get("returnTo");
+  const returnTo = safeRedirectPath(searchParams.get("returnTo"));
   const name = searchParams.get("name");
   const phone = searchParams.get("phone");
   const role = searchParams.get("role");
@@ -40,17 +47,14 @@ export async function GET(request: Request) {
         .single();
 
       if (profile) {
-        // Usuário já existe → volta pra onde ele queria ir
-        return NextResponse.redirect(`${origin}${returnTo || "/"}`);
+        return NextResponse.redirect(`${origin}${returnTo}`);
       }
 
-      // Usuário novo → sempre onboarding, carregando junto os dados
-      // de cadastro (se vieram) e o returnTo (pra usar depois de criar o perfil)
       const onboardingParams = new URLSearchParams();
       if (name) onboardingParams.set("name", name);
       if (phone) onboardingParams.set("phone", phone);
       if (role) onboardingParams.set("role", role);
-      if (returnTo) onboardingParams.set("returnTo", returnTo);
+      if (returnTo !== "/") onboardingParams.set("returnTo", returnTo);
 
       const query = onboardingParams.toString();
       return NextResponse.redirect(
