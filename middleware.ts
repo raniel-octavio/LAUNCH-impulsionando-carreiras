@@ -17,7 +17,7 @@ const protectedPaths = [
 const authOnlyPaths = ["/login", "/registro"];
 
 // Rotas onde NÃO forçamos checagem de perfil (senão vira loop de redirect)
-const onboardingExemptPaths = ["/onboarding", "/auth"];
+const exemptPaths = ["/registro", "/auth"]; // troquei onboarding por registro
 
 const roleRestrictedPaths: { prefix: string; allowedRoles: string[] }[] = [
   { prefix: "/membro", allowedRoles: ["candidato"] },
@@ -55,7 +55,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isProtected = protectedPaths.some((p) => path.startsWith(p));
   const isAuthOnly = authOnlyPaths.some((p) => path.startsWith(p));
-  const isOnboardingExempt = onboardingExemptPaths.some((p) => path.startsWith(p));
+  const isExempt = exemptPaths.some((p) => path.startsWith(p));
 
   if (isProtected && !user) {
     const redirectUrl = new URL("/login", request.url);
@@ -63,11 +63,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Sessão existe? Confere se o cadastro (linha em "users") foi concluído.
-  // Se não foi, força completar o onboarding antes de qualquer outra coisa.
   let profile: { role: string } | null = null;
 
-  if (user && !isOnboardingExempt) {
+  if (user && !isExempt) {
     const { data } = await supabase
       .from("users")
       .select("role")
@@ -76,10 +74,10 @@ export async function middleware(request: NextRequest) {
 
     profile = data;
 
-    if (!profile) {
-      const onboardingUrl = new URL("/onboarding/completar", request.url);
-      onboardingUrl.searchParams.set("returnTo", path);
-      return NextResponse.redirect(onboardingUrl);
+    if (!profile && isProtected) {
+      const registroUrl = new URL("/registro", request.url);
+      registroUrl.searchParams.set("returnTo", path);
+      return NextResponse.redirect(registroUrl);
     }
   }
 
