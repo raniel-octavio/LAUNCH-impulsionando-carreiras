@@ -14,8 +14,11 @@ const protectedPaths = [
   "/recrutador",
 ];
 
-const authOnlyPaths = ["/login", "/registro"];
-const exemptPaths = ["/registro", "/auth"]; // rotas que não entram na checagem
+// só login é exclusivo para não-logados
+const authOnlyPaths = ["/login"];
+
+// rotas que não entram na checagem de perfil
+const exemptPaths = ["/registro", "/auth"];
 
 const roleRestrictedPaths: { prefix: string; allowedRoles: string[] }[] = [
   { prefix: "/membro", allowedRoles: ["candidato"] },
@@ -79,7 +82,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // se já está logado, não deixa acessar /login ou /registro
+  // se já está logado, não deixa acessar /login
   if (isAuthOnly && user) {
     return NextResponse.redirect(new URL("/feed", request.url));
   }
