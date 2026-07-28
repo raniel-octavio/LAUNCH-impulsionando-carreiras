@@ -15,9 +15,7 @@ const protectedPaths = [
 ];
 
 const authOnlyPaths = ["/login", "/registro"];
-
-// Rotas onde NÃO forçamos checagem de perfil (senão vira loop de redirect)
-const onboardingExemptPaths = ["/onboarding", "/auth"];
+const exemptPaths = ["/registro", "/auth"]; // rotas que não entram na checagem
 
 const roleRestrictedPaths: { prefix: string; allowedRoles: string[] }[] = [
   { prefix: "/membro", allowedRoles: ["candidato"] },
@@ -32,10 +30,8 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookiesToSet) => {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
@@ -55,39 +51,40 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isProtected = protectedPaths.some((p) => path.startsWith(p));
   const isAuthOnly = authOnlyPaths.some((p) => path.startsWith(p));
-  const isOnboardingExempt = onboardingExemptPaths.some((p) => path.startsWith(p));
+  const isExempt = exemptPaths.some((p) => path.startsWith(p));
 
+  // rota protegida sem login → manda pro login
   if (isProtected && !user) {
     const redirectUrl = new URL("/login", request.url);
     redirectUrl.searchParams.set("callbackUrl", path);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Sessão existe? Confere se o cadastro (linha em "users") foi concluído.
-  // Se não foi, força completar o onboarding antes de qualquer outra coisa.
   let profile: { role: string } | null = null;
 
-  if (user && !isOnboardingExempt) {
-  const { data } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single();
+  if (user && !isExempt) {
+    const { data } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
 
-  profile = data;
+    profile = data;
 
-  if (!profile && isProtected) {
-    const onboardingUrl = new URL("/onboarding/completar", request.url);
-    onboardingUrl.searchParams.set("returnTo", path);
-    return NextResponse.redirect(onboardingUrl);
+    // usuário logado sem perfil → só bloqueia se tentar rota protegida
+    if (!profile && isProtected) {
+      const registroUrl = new URL("/registro", request.url);
+      registroUrl.searchParams.set("returnTo", path);
+      return NextResponse.redirect(registroUrl);
+    }
   }
-}
 
-
+  // se já está logado, não deixa acessar /login ou /registro
   if (isAuthOnly && user) {
     return NextResponse.redirect(new URL("/feed", request.url));
   }
 
+  // checagem de role
   if (user && profile) {
     const roleRule = roleRestrictedPaths.find((r) => path.startsWith(r.prefix));
     if (roleRule && !roleRule.allowedRoles.includes(profile.role)) {
