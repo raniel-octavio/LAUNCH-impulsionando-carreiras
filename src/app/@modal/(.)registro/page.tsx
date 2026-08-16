@@ -11,8 +11,7 @@ export default function RegistroModal() {
   const hintedRole = role === "member" || role === "recruiter" ? role : null;
 
   function handleClose() {
-<<<<<<< HEAD
-    router.replace("/"); // ou outra rota padrão, se preferir
+    router.replace("/"); // ou use router.back(), conforme sua lógica
   }
 
   return (
@@ -21,13 +20,6 @@ export default function RegistroModal() {
       title="Complete seu cadastro"
       onClose={handleClose}
     >
-=======
-    router.back();
-  }
-
-  return (
-    <AuthModal eyebrow="Crie sua conta" title="Complete seu cadastro" onClose={handleClose}>
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
       <RegistroForm hintedRole={hintedRole} />
     </AuthModal>
   );

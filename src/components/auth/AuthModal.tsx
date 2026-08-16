@@ -24,6 +24,7 @@ export function AuthModal({
     }
     document.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden";
+
     return () => {
       document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
@@ -33,10 +34,7 @@ export function AuthModal({
   function triggerClose() {
     if (hasClosedRef.current) return;
     hasClosedRef.current = true;
-<<<<<<< HEAD
-=======
 
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
     setIsClosing(true);
     document.body.style.overflow = ""; // limpa já, não espera o unmount
     setTimeout(() => {
@@ -46,11 +44,7 @@ export function AuthModal({
 
   return (
     <div
-<<<<<<< HEAD
       className={`fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-6 py-6 overflow-y-auto bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
-=======
-      className={`fixed inset-0 z-50 flex items-center justify-center px-6 bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
         isClosing ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       onClick={(e) => {
