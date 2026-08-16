@@ -22,17 +22,18 @@ export const metadata: Metadata = {
     "Plataforma moderna de recrutamento com match de vagas, currículo, mensagens e networking profissional.",
 };
 
+// app/layout.tsx
 export default function RootLayout({
   children,
   modal,
-}: Readonly<{
+}: {
   children: React.ReactNode;
   modal: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="pt-BR" className={`${outfit.variable} ${syne.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-launch-void text-launch-white">
-        <AppChrome navbar={<Navbar />}>{children}</AppChrome>
+    <html lang="pt-BR">
+      <body>
+        {children}
         {modal}
       </body>
     </html>

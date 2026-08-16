@@ -221,7 +221,7 @@ export default function LandingPage() {
         <Reveal delayMs={160}>
           <div className="max-w-7xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
             <Link
-              href="/login?callbackUrl=/feed"
+              href="/login?callbackUrl=/vagas"
               className={`group relative overflow-hidden rounded-sm p-8 min-h-[200px] flex flex-col justify-end text-white ${focusRing}`}
             >
               <div

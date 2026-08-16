@@ -35,39 +35,42 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
       phone,
       role: role as string,
     });
-    window.location.href = `/api/auth/signin/google?callbackUrl=${encodeURIComponent(
-      `/onboarding/completar?${params.toString()}`
-    )}`;
+    window.location.href =
+      "/api/auth/signin/google?callbackUrl=" +
+      encodeURIComponent(`/onboarding/completar?${params.toString()}`);
   }
 
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-2 gap-3 mb-6">
+    <div className="w-full min-w-0">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-5 sm:mb-6">
         <button
           type="button"
           onClick={() => setRole("member")}
-          className={`flex flex-col items-center gap-2 rounded-sm border px-4 py-4 transition-all ${
-            role === "member"
+          className={
+            "flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 min-w-0 transition-all " +
+            (role === "member"
               ? "border-sky-300 bg-sky-300/15 text-white"
-              : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85"
-          }`}
+              : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85")
+          }
         >
-          <UserRound className="w-5 h-5" strokeWidth={1.5} />
-          <span className="text-[11px] tracking-[0.14em] uppercase">
+          <UserRound className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" strokeWidth={1.5} />
+          <span className="text-[9.5px] sm:text-[11px] tracking-[0.06em] sm:tracking-[0.14em] uppercase text-center leading-tight break-words">
             Sou candidato
           </span>
         </button>
+
         <button
           type="button"
           onClick={() => setRole("recruiter")}
-          className={`flex flex-col items-center gap-2 rounded-sm border px-4 py-4 transition-all ${
-            role === "recruiter"
+          className={
+            "flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 min-w-0 transition-all " +
+            (role === "recruiter"
               ? "border-sky-300 bg-sky-300/15 text-white"
-              : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85"
-          }`}
+              : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85")
+          }
         >
-          <Building2 className="w-5 h-5" strokeWidth={1.5} />
-          <span className="text-[11px] tracking-[0.14em] uppercase">
+          <Building2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" strokeWidth={1.5} />
+          <span className="text-[9.5px] sm:text-[11px] tracking-[0.06em] sm:tracking-[0.14em] uppercase text-center leading-tight break-words">
             Sou recrutador
           </span>
         </button>
@@ -82,7 +85,7 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Seu nome completo"
-          className="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-sky-300/70 focus:bg-white/8 transition-colors"
+          className="w-full min-w-0 bg-white/5 border border-white/20 rounded-sm px-3 sm:px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-sky-300/70 focus:bg-white/8 transition-colors"
         />
       </div>
 
@@ -97,11 +100,12 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
           onChange={handlePhoneChange}
           onBlur={() => setTouched(true)}
           placeholder="(11) 98888-7777"
-          className={`w-full bg-white/5 border rounded-sm px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none transition-colors ${
-            phoneError
+          className={
+            "w-full min-w-0 bg-white/5 border rounded-sm px-3 sm:px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none transition-colors " +
+            (phoneError
               ? "border-red-400/60 focus:border-red-400"
-              : "border-white/20 focus:border-sky-300/70 focus:bg-white/8"
-          }`}
+              : "border-white/20 focus:border-sky-300/70 focus:bg-white/8")
+          }
         />
         {phoneError && (
           <p className="mt-1.5 text-[11px] text-red-300">{phoneError}</p>
@@ -113,7 +117,7 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-0.5 w-4 h-4 rounded-sm border-white/30 bg-white/5 accent-sky-300"
+          className="mt-0.5 w-4 h-4 shrink-0 rounded-sm border-white/30 bg-white/5 accent-sky-300"
         />
         <span className="text-[11px] text-white/60 leading-relaxed">
           Li e aceito a{" "}
@@ -132,9 +136,9 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
         type="button"
         disabled={!canContinue}
         onClick={handleGoogleContinue}
-        className="mt-5 w-full inline-flex items-center justify-center gap-3 px-6 py-3.5 rounded-sm bg-white text-slate-900 text-sm font-semibold tracking-[0.08em] disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:bg-white/90 transition-all"
+        className="mt-5 w-full inline-flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3.5 rounded-sm bg-white text-slate-900 text-sm font-semibold tracking-[0.08em] disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:bg-white/90 transition-all"
       >
-        <GoogleIcon className="w-4 h-4" />
+        <GoogleIcon className="w-4 h-4 shrink-0" />
         Continuar com Google
       </button>
 

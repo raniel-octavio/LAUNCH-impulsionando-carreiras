@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-export function useAuthModal() {
+export function useAuthModal(callbackUrl: string = "/") {
   const [isOpen, setIsOpen] = useState(false);
 
   const open = useCallback(() => setIsOpen(true), []);
@@ -14,9 +14,9 @@ export function useAuthModal() {
     <AuthModal
       eyebrow="Bem-vindo de volta"
       title="Entre na sua conta"
-      onClose={close} // hook garante que SEMPRE existe
+      onClose={close}
     >
-      <LoginForm callbackUrl="/" />
+      <LoginForm callbackUrl={callbackUrl} />
     </AuthModal>
   ) : null;
 
