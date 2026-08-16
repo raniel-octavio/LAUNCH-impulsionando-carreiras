@@ -9,9 +9,18 @@ export function RegistroModalContent() {
   const searchParams = useSearchParams();
   const role = searchParams.get("role");
   const hintedRole = role === "member" || role === "recruiter" ? role : null;
+  const returnTo = searchParams.get("returnTo");
 
   function handleClose() {
-    router.replace("/"); // ou use router.back(), conforme sua lógica
+    // router.back() preserva a pilha de histórico que a interceptação de
+    // rotas do Next.js usa como referência. Usar router.replace() aqui
+    // quebra essa referência e faz o modal parar de abrir depois do
+    // primeiro fechamento.
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.replace("/");
+    }
   }
 
   return (
@@ -20,7 +29,7 @@ export function RegistroModalContent() {
       title="Complete seu cadastro"
       onClose={handleClose}
     >
-      <RegistroForm hintedRole={hintedRole} />
+      <RegistroForm hintedRole={hintedRole} returnTo={returnTo} />
     </AuthModal>
   );
 }

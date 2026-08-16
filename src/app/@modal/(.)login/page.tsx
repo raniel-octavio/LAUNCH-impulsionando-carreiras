@@ -11,7 +11,15 @@ function LoginModalContent() {
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   function handleClose() {
-    router.replace(callbackUrl); // ou use router.back(), conforme sua lógica
+    // router.back() preserva a pilha de histórico que a interceptação de
+    // rotas do Next.js usa como referência. Usar router.replace() aqui
+    // quebra essa referência e faz o modal parar de abrir depois do
+    // primeiro fechamento.
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.replace(callbackUrl);
+    }
   }
 
   return (

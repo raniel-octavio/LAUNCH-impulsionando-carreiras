@@ -19,14 +19,8 @@ export function AuthModal({
   const hasClosedRef = useRef(false);
 
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") triggerClose();
-    }
-    document.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden";
-
     return () => {
-      document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
     };
   }, []);
@@ -47,9 +41,6 @@ export function AuthModal({
       className={`fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-6 py-6 overflow-y-auto bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
         isClosing ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) triggerClose();
-      }}
     >
       <div
         className={`relative w-full max-w-md my-auto transform transition-all duration-300 ${

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { X } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { RegistroForm } from "@/components/auth/RegistroForm";
 
@@ -6,9 +8,9 @@ const HERO_IMAGE = "/home.png";
 export default async function RegistroPage({
   searchParams,
 }: {
-  searchParams: Promise<{ role?: string }>;
+  searchParams: Promise<{ role?: string; returnTo?: string }>;
 }) {
-  const { role } = await searchParams;
+  const { role, returnTo } = await searchParams;
   const hintedRole = role === "member" || role === "recruiter" ? role : null;
 
   return (
@@ -23,6 +25,13 @@ export default async function RegistroPage({
 
       <header className="relative z-20 flex items-center justify-center px-5 sm:px-8 lg:px-14 py-4 sm:py-6 animate-fade-in shrink-0">
         <Logo size="md" tone="light" />
+        <Link
+          href="/"
+          aria-label="Fechar"
+          className="absolute right-5 sm:right-8 lg:right-14 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </Link>
       </header>
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-16 overflow-y-auto">
@@ -34,7 +43,7 @@ export default async function RegistroPage({
         </h2>
 
         <div className="animate-fade-up delay-200 w-full max-w-md rounded-lg border border-white/15 bg-white/8 backdrop-blur-xl p-5 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-          <RegistroForm hintedRole={hintedRole} />
+          <RegistroForm hintedRole={hintedRole} returnTo={returnTo ?? null} />
         </div>
 
         <a

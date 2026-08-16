@@ -2,20 +2,25 @@
 
 import { useState, useMemo } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { createUser } from "@/lib/api/users";
 import { UserRound, Building2 } from "lucide-react";
 import { maskPhoneBR, isValidPhoneBR } from "@/lib/phone";
-import { useRouter } from "next/navigation";
 
 type Role = "member" | "recruiter";
 
-export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
+export function RegistroForm({
+  hintedRole,
+  returnTo,
+}: {
+  hintedRole?: Role | null;
+  returnTo?: string | null;
+}) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<Role | null>(hintedRole ?? null);
   const [touched, setTouched] = useState(false);
   const [consent, setConsent] = useState(false);
-  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const phoneError = useMemo(() => {
     if (!touched || phone.length === 0) return null;
@@ -26,7 +31,8 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
     name.trim().length >= 3 &&
     isValidPhoneBR(phone) &&
     role !== null &&
-    consent;
+    consent &&
+    !submitting;
 
   function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
     setPhone(maskPhoneBR(e.target.value));
@@ -35,38 +41,38 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
   async function handleGoogleContinue() {
     if (!canContinue) return;
 
+    setSubmitting(true);
+    setSubmitError(null);
+
     try {
-      // 1. Autentica com Google
+      // signInWithOAuth redireciona o navegador pro Google — nada depois
+      // dele roda nesta execução. Por isso os dados do formulário vão
+      // como query params na própria URL de callback: é assim que
+      // src/app/auth/callback/route.ts espera recebê-los (name, phone,
+      // role, returnTo) pra decidir entre ir direto pro returnTo (perfil
+      // já existe) ou completar o cadastro em /onboarding/completar.
+      const callbackUrl = new URL("/auth/callback", window.location.origin);
+      callbackUrl.searchParams.set("name", name.trim());
+      callbackUrl.searchParams.set("phone", phone);
+      callbackUrl.searchParams.set(
+        "role",
+        role === "recruiter" ? "recrutador" : "candidato"
+      );
+      if (returnTo) callbackUrl.searchParams.set("returnTo", returnTo);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: "/" },
+        options: { redirectTo: callbackUrl.toString() },
       });
+
       if (error) throw error;
 
-      // 2. Recupera usuário autenticado
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // 3. Cria perfil com dados do formulário
-      await createUser({
-        id: user.id,
-        name: name.trim(),
-        headline: "",
-        avatar: user.user_metadata?.avatar_url ?? "",
-        role: role === "recruiter" ? "recrutador" : "candidato",
-        location: "",
-        about: "",
-        skills: [],
-        email: user.email!,
-        phone,
-      });
-
-      // 4. Redireciona para feed
-      router.push("/feed");
+      // A partir daqui o navegador já está saindo pro Google.
+      // Não há mais nada pra fazer nesta função.
     } catch (err) {
-      console.error("Erro ao registrar:", err);
+      console.error("Erro ao iniciar registro:", err);
+      setSubmitError("Não foi possível continuar com o Google. Tente novamente.");
+      setSubmitting(false);
     }
   }
 
@@ -163,6 +169,10 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
         </span>
       </label>
 
+      {submitError && (
+        <p className="mt-2 text-[11px] text-red-300">{submitError}</p>
+      )}
+
       {/* Botão Google */}
       <button
         type="button"
@@ -171,7 +181,7 @@ export function RegistroForm({ hintedRole }: { hintedRole?: Role | null }) {
         className="mt-5 w-full inline-flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3.5 rounded-sm bg-white text-slate-900 text-sm font-semibold tracking-[0.08em] disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:bg-white/90 transition-all"
       >
         <GoogleIcon className="w-4 h-4 shrink-0" />
-        Continuar com Google
+        {submitting ? "Redirecionando..." : "Continuar com Google"}
       </button>
 
       <p className="mt-4 text-center text-[11px] text-white/45">
