@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { UserRound, Building2 } from "lucide-react";
 import { maskPhoneBR, isValidPhoneBR } from "@/lib/phone";
@@ -14,6 +15,7 @@ export function RegistroForm({
   hintedRole?: Role | null;
   returnTo?: string | null;
 }) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<Role | null>(hintedRole ?? null);
@@ -45,12 +47,6 @@ export function RegistroForm({
     setSubmitError(null);
 
     try {
-      // signInWithOAuth redireciona o navegador pro Google — nada depois
-      // dele roda nesta execução. Por isso os dados do formulário vão
-      // como query params na própria URL de callback: é assim que
-      // src/app/auth/callback/route.ts espera recebê-los (name, phone,
-      // role, returnTo) pra decidir entre ir direto pro returnTo (perfil
-      // já existe) ou completar o cadastro em /onboarding/completar.
       const callbackUrl = new URL("/auth/callback", window.location.origin);
       callbackUrl.searchParams.set("name", name.trim());
       callbackUrl.searchParams.set("phone", phone);
@@ -67,8 +63,8 @@ export function RegistroForm({
 
       if (error) throw error;
 
-      // A partir daqui o navegador já está saindo pro Google.
-      // Não há mais nada pra fazer nesta função.
+      router.replace(returnTo ?? "/");
+      alert("Cadastro concluído com sucesso!");
     } catch (err) {
       console.error("Erro ao iniciar registro:", err);
       setSubmitError("Não foi possível continuar com o Google. Tente novamente.");
@@ -83,14 +79,14 @@ export function RegistroForm({
         <button
           type="button"
           onClick={() => setRole("member")}
-          className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 min-w-0 transition-all ${
+          className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 transition-all ${
             role === "member"
               ? "border-sky-300 bg-sky-300/15 text-white"
               : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85"
           }`}
         >
-          <UserRound className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" strokeWidth={1.5} />
-          <span className="text-[9.5px] sm:text-[11px] tracking-[0.06em] sm:tracking-[0.14em] uppercase text-center leading-tight break-words">
+          <UserRound className="w-5 h-5 shrink-0" strokeWidth={1.5} />
+          <span className="text-[10px] sm:text-[11px] uppercase tracking-wide">
             Sou candidato
           </span>
         </button>
@@ -98,14 +94,14 @@ export function RegistroForm({
         <button
           type="button"
           onClick={() => setRole("recruiter")}
-          className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 min-w-0 transition-all ${
+          className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 transition-all ${
             role === "recruiter"
               ? "border-sky-300 bg-sky-300/15 text-white"
               : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85"
           }`}
         >
-          <Building2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" strokeWidth={1.5} />
-          <span className="text-[9.5px] sm:text-[11px] tracking-[0.06em] sm:tracking-[0.14em] uppercase text-center leading-tight break-words">
+          <Building2 className="w-5 h-5 shrink-0" strokeWidth={1.5} />
+          <span className="text-[10px] sm:text-[11px] uppercase tracking-wide">
             Sou recrutador
           </span>
         </button>
@@ -121,7 +117,7 @@ export function RegistroForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Seu nome completo"
-          className="w-full min-w-0 bg-white/5 border border-white/20 rounded-sm px-3 sm:px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-sky-300/70 focus:bg-white/8 transition-colors"
+          className="w-full bg-white/5 border border-white/20 rounded-sm px-3 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-sky-300/70 focus:bg-white/8 transition-colors"
         />
       </div>
 
@@ -137,24 +133,24 @@ export function RegistroForm({
           onChange={handlePhoneChange}
           onBlur={() => setTouched(true)}
           placeholder="(11) 98888-7777"
-          className={`w-full min-w-0 bg-white/5 border rounded-sm px-3 sm:px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none transition-colors ${
+          className={`w-full bg-white/5 border rounded-sm px-3 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none transition-colors ${
             phoneError
               ? "border-red-400/60 focus:border-red-400"
               : "border-white/20 focus:border-sky-300/70 focus:bg-white/8"
           }`}
         />
         {phoneError && (
-          <p className="mt-1.5 text-[11px] text-red-300">{phoneError}</p>
+          <p className="mt-1 text-[11px] text-red-300">{phoneError}</p>
         )}
       </div>
 
       {/* Consentimento */}
-      <label className="flex items-start gap-2.5 mb-2 cursor-pointer">
+      <label className="flex items-start gap-2 mb-2 cursor-pointer">
         <input
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-0.5 w-4 h-4 shrink-0 rounded-sm border-white/30 bg-white/5 accent-sky-300"
+          className="w-4 h-4 shrink-0 rounded-sm border-white/30 bg-white/5 accent-sky-300"
         />
         <span className="text-[11px] text-white/60 leading-relaxed">
           Li e aceito a{" "}
@@ -178,9 +174,8 @@ export function RegistroForm({
         type="button"
         disabled={!canContinue}
         onClick={handleGoogleContinue}
-        className="mt-5 w-full inline-flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3.5 rounded-sm bg-white text-slate-900 text-sm font-semibold tracking-[0.08em] disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:bg-white/90 transition-all"
+        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-sm bg-white text-slate-900 text-sm font-semibold tracking-wide disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/90 transition-all"
       >
-        <GoogleIcon className="w-4 h-4 shrink-0" />
         {submitting ? "Redirecionando..." : "Continuar com Google"}
       </button>
 
@@ -188,28 +183,5 @@ export function RegistroForm({
         Seu e-mail do Google será usado para identificar sua conta.
       </p>
     </div>
-  );
-}
-
-function GoogleIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24">
-      <path
-        fill="#4285F4"
-        d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.47a5.53 5.53 0 01-2.4 3.63v3h3.88c2.27-2.09 3.57-5.17 3.57-8.82z"
-      />
-      <path
-        fill="#34A853"
-        d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.88-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.27v3.11A11.99 11.99 0 0012 24z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M5.27 14.29a7.2 7.2 0 010-4.58V6.6H1.27a12 12 0 000 10.8l4-3.11z"
-      />
-      <path
-        fill="#EA4335"
-        d="M12 4.75c1.76 0 3.34.6 4.59 1.79l3.44-3.44C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.69 1.27 6.6l4 3.11C6.22 6.86 8.87 4.75 12 4.75z"
-      />
-    </svg>
   );
 }

@@ -12,10 +12,6 @@ export function RegistroModalContent() {
   const returnTo = searchParams.get("returnTo");
 
   function handleClose() {
-    // router.back() preserva a pilha de histórico que a interceptação de
-    // rotas do Next.js usa como referência. Usar router.replace() aqui
-    // quebra essa referência e faz o modal parar de abrir depois do
-    // primeiro fechamento.
     if (window.history.length > 1) {
       router.back();
     } else {
@@ -24,12 +20,8 @@ export function RegistroModalContent() {
   }
 
   return (
-    <AuthModal
-      eyebrow="Crie sua conta"
-      title="Complete seu cadastro"
-      onClose={handleClose}
-    >
-      <RegistroForm hintedRole={hintedRole} returnTo={returnTo} />
+    <AuthModal eyebrow="Crie sua conta" title="Complete seu cadastro" onClose={handleClose}>
+      <RegistroForm hintedRole={hintedRole} returnTo={returnTo ?? "/"} />
     </AuthModal>
   );
 }
