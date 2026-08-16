@@ -1,3 +1,4 @@
+// components/layout/AppChrome.tsx
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -10,7 +11,9 @@ export function AppChrome({
   navbar: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isLanding = pathname === "/";
+
+  const isAuthRoute = pathname === "/login" || pathname === "/registro";
+  const isLanding = pathname === "/" || isAuthRoute;
 
   return (
     <>

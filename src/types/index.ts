@@ -1,4 +1,7 @@
 export type UserRole = "candidato" | "recrutador" | "empresa";
+// Versão do User sem os campos sensíveis — usada ao ver o perfil de OUTRA pessoa
+export type PublicUser = Omit<User,"email" | "phone" | "whatsapp" | "birthDate" | "maritalStatus" | "salaryExpectation">;
+
 
 export interface User {
   id: string;
@@ -74,6 +77,8 @@ export interface Message {
   timestamp: string;
   read: boolean;
 }
+
+
 
 export interface Conversation {
   id: string;

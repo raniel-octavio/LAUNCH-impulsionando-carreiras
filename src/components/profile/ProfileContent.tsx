@@ -1,8 +1,12 @@
+// src/components/profile/ProfileContent.tsx
 import Link from "next/link";
-import { MapPin, Users, MessageCircle, Briefcase, Award } from "lucide-react";
+import { MapPin, Users, MessageCircle, Briefcase, Award, Settings } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { openConversation } from "@/lib/actions";
+import { LogoutButton } from "@/components/profile/LogoutButton";
+import { DeleteAccountButton } from "@/components/profile/DeleteAccountButton";
 import type { User } from "@/types";
+
 const MEMBERSHIP_IMAGE = "/job4.png";
 const roleLabels: Record<User["role"], string> = {
   candidato: "Candidato",
@@ -125,6 +129,20 @@ export function ProfileContent({
             </h3>
             <p className="text-xs text-launch-muted mt-1">Converse com candidatos e recrutadores</p>
           </Link>
+        </div>
+      )}
+
+      {/* Configurações da conta — só no próprio perfil */}
+      {isOwnProfile && (
+        <div className="card-glass rounded-sm p-4 sm:p-6">
+          <h2 className="font-semibold text-launch-white mb-4 flex items-center gap-2">
+            <Settings className="w-4 h-4 text-launch-gold" />
+            Configurações da conta
+          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <LogoutButton />
+            <DeleteAccountButton userId={user.id} />
+          </div>
         </div>
       )}
     </div>

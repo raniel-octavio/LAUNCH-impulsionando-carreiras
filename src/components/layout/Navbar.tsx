@@ -1,13 +1,19 @@
+// src/components/layout/Navbar.tsx
+"use client";
+
 import Link from "next/link";
 import { Bell, Search } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { NavLinks } from "@/components/layout/NavLinks";
-import { getUnreadCount } from "@/lib/store";
-import { CURRENT_USER_ID, currentUser } from "@/lib/seed";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-export async function Navbar() {
-  const unread = getUnreadCount(CURRENT_USER_ID);
+export function Navbar() {
+  const { profile, loading } = useCurrentUser();
+
+  // Ajuste: getUnreadCount(CURRENT_USER_ID) dependia do mock.
+  // Por enquanto zeramos até migrarmos mensagens pro Supabase também.
+  const unread = 0;
 
   return (
     <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-launch-border shadow-[0_4px_24px_rgba(15,23,42,0.04)]">
@@ -42,7 +48,7 @@ export async function Navbar() {
               <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-launch-gold" />
             </button>
             <Link href="/perfil" className="shrink-0">
-              <Avatar user={currentUser} size="sm" />
+              {!loading && profile && <Avatar user={profile} size="sm" />}
             </Link>
           </div>
         </div>
@@ -59,7 +65,7 @@ export async function Navbar() {
                 <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-launch-gold" />
               </button>
               <Link href="/perfil">
-                <Avatar user={currentUser} size="sm" />
+                {!loading && profile && <Avatar user={profile} size="sm" />}
               </Link>
             </div>
           </div>

@@ -1,13 +1,22 @@
+<<<<<<< HEAD
 // app/login/page.tsx — fallback de página cheia, sem useAuthModal
+=======
+// app/login/page.tsx
+>>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
 "use client";
 
+import { Suspense } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { useSearchParams } from "next/navigation";
 
 const HERO_IMAGE = "/home.png";
 
+<<<<<<< HEAD
 export default function LoginPage() {
+=======
+function LoginPageContent() {
+>>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
@@ -36,4 +45,15 @@ export default function LoginPage() {
       </div>
     </div>
   );
+<<<<<<< HEAD
+=======
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
+  );
+>>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
 }
