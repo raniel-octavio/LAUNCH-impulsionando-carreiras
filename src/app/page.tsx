@@ -124,8 +124,9 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
-              prefetch={false}  
+               
               href="/login"
+              prefetch={false}
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-sm border border-white/40 text-white text-[11px] font-semibold tracking-[0.14em] uppercase hover:bg-white hover:text-slate-900 transition-all ${focusRing}`}
             >
               Entrar
