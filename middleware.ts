@@ -74,11 +74,13 @@ export async function middleware(request: NextRequest) {
 
     profile = data;
 
-    // usuário logado sem perfil → só bloqueia se tentar rota protegida
-    if (!profile && isProtected) {
-      const registroUrl = new URL("/registro", request.url);
-      registroUrl.searchParams.set("returnTo", path);
-      return NextResponse.redirect(registroUrl);
+    // sessão válida mas sem perfil de aplicação → desloga e manda pra home
+    if (!profile) {
+      await supabase.auth.signOut();
+      const homeUrl = new URL("/", request.url);
+      return NextResponse.redirect(homeUrl, {
+        headers: response.headers,
+      });
     }
   }
 
