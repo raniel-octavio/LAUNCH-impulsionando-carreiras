@@ -23,15 +23,19 @@ export async function GET(request: Request) {
   const siteUrl =
     rawSiteUrl && rawSiteUrl !== "undefined" ? rawSiteUrl : url.origin;
 
-  // Usa o construtor URL em vez de concatenar strings — isso garante que
-  // o resultado é sempre uma URL absoluta válida, mesmo que "returnTo"
-  // ou "siteUrl" venham com formato inesperado.
+  // Usa o construtor URL em vez de concatenar strings — garante URL absoluta válida
   function buildRedirect(path: string) {
     return NextResponse.redirect(new URL(path, siteUrl));
   }
 
   function errorRedirect(message: string) {
     return buildRedirect(`/auth/error?message=${encodeURIComponent(message)}`);
+  }
+
+  function goToRegistro() {
+    const registroUrl = new URL("/registro", siteUrl);
+    registroUrl.searchParams.set("returnTo", returnTo);
+    return NextResponse.redirect(registroUrl);
   }
 
   try {
@@ -80,6 +84,13 @@ export async function GET(request: Request) {
 
     if (profile) {
       return buildRedirect(returnTo);
+    }
+
+    // perfil não existe: se não veio "name" (ou "role"), essa não foi uma
+    // tentativa de registro (foi um login direto) → manda pro formulário
+    // em vez de tentar um insert que vai falhar por falta de dados.
+    if (!name || !role) {
+      return goToRegistro();
     }
 
     // não existe → cria registro no banco
