@@ -2,6 +2,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { createClient } from "@supabase/supabase-js";
 
 // Só aceita caminhos internos (começam com "/" mas não com "//")
 function safeRedirectPath(path: string | null): string {
@@ -11,12 +12,14 @@ function safeRedirectPath(path: string | null): string {
 }
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const returnTo = safeRedirectPath(searchParams.get("returnTo"));
   const name = searchParams.get("name");
   const phone = searchParams.get("phone");
   const role = searchParams.get("role");
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
 
   if (code) {
     const cookieStore = await cookies();
@@ -40,33 +43,42 @@ export async function GET(request: Request) {
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
-      const { data: profile } = await supabase
+      // client admin com service role (ignora RLS)
+      const admin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+
+      // verifica se já existe perfil
+      const { data: profile } = await admin
         .from("users")
         .select("id")
         .eq("id", data.user.id)
         .single();
 
       if (profile) {
-        return NextResponse.redirect(`${origin}${returnTo}`);
+        return NextResponse.redirect(`${siteUrl}${returnTo}`);
       }
 
-      const onboardingParams = new URLSearchParams();
-      if (name) onboardingParams.set("name", name);
-      if (phone) onboardingParams.set("phone", phone);
-      if (role) onboardingParams.set("role", role);
-      if (returnTo !== "/") onboardingParams.set("returnTo", returnTo);
+      // cria registro no banco
+      await admin.from("users").insert({
+        id: data.user.id,
+        nome: name,
+        telefone: phone,
+        role,
+        email: data.user.email,
+      });
 
-      const query = onboardingParams.toString();
-      return NextResponse.redirect(
-        `${origin}/onboarding/completar${query ? `?${query}` : ""}`
-      );
+      return NextResponse.redirect(`${siteUrl}${returnTo}`);
     }
 
     console.error("Erro na troca de código:", error);
     return NextResponse.redirect(
-      `${origin}/auth/error?message=${encodeURIComponent(error?.message ?? "erro desconhecido")}`
+      `${siteUrl}/auth/error?message=${encodeURIComponent(error?.message ?? "erro desconhecido")}`
     );
   }
 
-  return NextResponse.redirect(`${origin}/auth/error?message=${encodeURIComponent("nenhum código recebido")}`);
+  return NextResponse.redirect(
+    `${siteUrl}/auth/error?message=${encodeURIComponent("nenhum código recebido")}`
+  );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { UserRound, Building2 } from "lucide-react";
 import { maskPhoneBR, isValidPhoneBR } from "@/lib/phone";
@@ -15,7 +14,6 @@ export function RegistroForm({
   hintedRole?: Role | null;
   returnTo?: string | null;
 }) {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<Role | null>(hintedRole ?? null);
@@ -47,7 +45,8 @@ export function RegistroForm({
     setSubmitError(null);
 
     try {
-      const callbackUrl = new URL("/auth/callback", window.location.origin);
+      // Usa NEXT_PUBLIC_SITE_URL para montar o callback correto
+      const callbackUrl = new URL("/auth/callback", process.env.NEXT_PUBLIC_SITE_URL!);
       callbackUrl.searchParams.set("name", name.trim());
       callbackUrl.searchParams.set("phone", phone);
       callbackUrl.searchParams.set(
@@ -63,8 +62,7 @@ export function RegistroForm({
 
       if (error) throw error;
 
-      router.replace(returnTo ?? "/");
-      alert("Cadastro concluído com sucesso!");
+      // A partir daqui o navegador já está saindo pro Google
     } catch (err) {
       console.error("Erro ao iniciar registro:", err);
       setSubmitError("Não foi possível continuar com o Google. Tente novamente.");
@@ -79,31 +77,27 @@ export function RegistroForm({
         <button
           type="button"
           onClick={() => setRole("member")}
-          className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 transition-all ${
+          className={`flex flex-col items-center justify-center gap-2 rounded-sm border px-4 py-4 transition-all ${
             role === "member"
               ? "border-sky-300 bg-sky-300/15 text-white"
               : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85"
           }`}
         >
           <UserRound className="w-5 h-5 shrink-0" strokeWidth={1.5} />
-          <span className="text-[10px] sm:text-[11px] uppercase tracking-wide">
-            Sou candidato
-          </span>
+          <span className="text-[11px] uppercase tracking-wide">Sou candidato</span>
         </button>
 
         <button
           type="button"
           onClick={() => setRole("recruiter")}
-          className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-sm border px-2 py-3 sm:px-4 sm:py-4 transition-all ${
+          className={`flex flex-col items-center justify-center gap-2 rounded-sm border px-4 py-4 transition-all ${
             role === "recruiter"
               ? "border-sky-300 bg-sky-300/15 text-white"
               : "border-white/20 text-white/60 hover:border-white/40 hover:text-white/85"
           }`}
         >
           <Building2 className="w-5 h-5 shrink-0" strokeWidth={1.5} />
-          <span className="text-[10px] sm:text-[11px] uppercase tracking-wide">
-            Sou recrutador
-          </span>
+          <span className="text-[11px] uppercase tracking-wide">Sou recrutador</span>
         </button>
       </div>
 
