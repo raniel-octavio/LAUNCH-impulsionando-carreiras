@@ -23,10 +23,15 @@ export async function GET(request: Request) {
   const siteUrl =
     rawSiteUrl && rawSiteUrl !== "undefined" ? rawSiteUrl : url.origin;
 
+  // Usa o construtor URL em vez de concatenar strings — isso garante que
+  // o resultado é sempre uma URL absoluta válida, mesmo que "returnTo"
+  // ou "siteUrl" venham com formato inesperado.
+  function buildRedirect(path: string) {
+    return NextResponse.redirect(new URL(path, siteUrl));
+  }
+
   function errorRedirect(message: string) {
-    return NextResponse.redirect(
-      `${siteUrl}/auth/error?message=${encodeURIComponent(message)}`
-    );
+    return buildRedirect(`/auth/error?message=${encodeURIComponent(message)}`);
   }
 
   try {
@@ -74,7 +79,7 @@ export async function GET(request: Request) {
     }
 
     if (profile) {
-      return NextResponse.redirect(`${siteUrl}${returnTo}`);
+      return buildRedirect(returnTo);
     }
 
     // não existe → cria registro no banco
@@ -93,7 +98,7 @@ export async function GET(request: Request) {
       );
     }
 
-    return NextResponse.redirect(`${siteUrl}${returnTo}`);
+    return buildRedirect(returnTo);
   } catch (err) {
     console.error("Erro inesperado no callback de auth:", err);
     return errorRedirect(
