@@ -63,8 +63,8 @@ export function RegistroForm({
 
       if (error) throw error;
 
-      router.replace(returnTo ?? "/");
-      alert("Cadastro concluído com sucesso!");
+      // Não faça nada aqui: o navegador já está sendo redirecionado
+      // para o Google. O sucesso real acontece em /auth/callback.
     } catch (err) {
       console.error("Erro ao iniciar registro:", err);
       setSubmitError("Não foi possível continuar com o Google. Tente novamente.");

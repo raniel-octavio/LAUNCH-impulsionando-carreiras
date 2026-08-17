@@ -20,60 +20,80 @@ export async function GET(request: Request) {
   // Usa a variável de ambiente para definir o site base (local ou produção)
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
 
-  if (code) {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          },
-        },
-      }
-    );
-
-    const { error, data } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error && data.user) {
-      // verifica se já existe perfil
-      const { data: profile } = await supabase
-        .from("users")
-        .select("id")
-        .eq("id", data.user.id)
-        .single();
-
-      if (profile) {
-        // já existe, vai direto pro destino
-        return NextResponse.redirect(`${siteUrl}${returnTo}`);
-      }
-
-      // não existe → cria registro no banco
-      await supabase.from("users").insert({
-        id: data.user.id,
-        nome: name,
-        telefone: phone,
-        role,
-        email: data.user.email,
-      });
-
-      // redireciona para tela inicial ou destino
-      return NextResponse.redirect(`${siteUrl}${returnTo}`);
-    }
-
-    console.error("Erro na troca de código:", error);
+  if (!code) {
     return NextResponse.redirect(
-      `${siteUrl}/auth/error?message=${encodeURIComponent(error?.message ?? "erro desconhecido")}`
+      `${siteUrl}/auth/error?message=${encodeURIComponent("nenhum código recebido")}`
     );
   }
 
-  return NextResponse.redirect(
-    `${siteUrl}/auth/error?message=${encodeURIComponent("nenhum código recebido")}`
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          );
+        },
+      },
+    }
   );
+
+  const { error, data } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error || !data.user) {
+    console.error("Erro na troca de código:", error);
+    return NextResponse.redirect(
+      `${siteUrl}/auth/error?message=${encodeURIComponent(
+        error?.message ?? "erro desconhecido"
+      )}`
+    );
+  }
+
+  // verifica se já existe perfil (maybeSingle não lança erro quando não encontra)
+  const { data: profile, error: profileError } = await supabase
+    .from("users")
+    .select("id")
+    .eq("id", data.user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Erro ao verificar perfil existente:", profileError);
+    return NextResponse.redirect(
+      `${siteUrl}/auth/error?message=${encodeURIComponent(
+        "Não foi possível verificar seu cadastro: " + profileError.message
+      )}`
+    );
+  }
+
+  if (profile) {
+    // já existe, vai direto pro destino
+    return NextResponse.redirect(`${siteUrl}${returnTo}`);
+  }
+
+  // não existe → cria registro no banco
+  const { error: insertError } = await supabase.from("users").insert({
+    id: data.user.id,
+    nome: name,
+    telefone: phone,
+    role,
+    email: data.user.email,
+  });
+
+  if (insertError) {
+    console.error("Erro ao criar perfil:", insertError);
+    return NextResponse.redirect(
+      `${siteUrl}/auth/error?message=${encodeURIComponent(
+        "Não foi possível concluir o cadastro: " + insertError.message
+      )}`
+    );
+  }
+
+  // redireciona para tela inicial ou destino
+  return NextResponse.redirect(`${siteUrl}${returnTo}`);
 }
