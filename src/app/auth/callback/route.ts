@@ -1,8 +1,6 @@
-// src/app/auth/callback/route.ts
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { createClient } from "@supabase/supabase-js";
 
 // Só aceita caminhos internos (começam com "/" mas não com "//")
 function safeRedirectPath(path: string | null): string {
@@ -19,6 +17,7 @@ export async function GET(request: Request) {
   const phone = searchParams.get("phone");
   const role = searchParams.get("role");
 
+  // Usa a variável de ambiente para definir o site base (local ou produção)
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
 
   if (code) {
@@ -43,25 +42,20 @@ export async function GET(request: Request) {
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
-      // client admin com service role (ignora RLS)
-      const admin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      );
-
       // verifica se já existe perfil
-      const { data: profile } = await admin
+      const { data: profile } = await supabase
         .from("users")
         .select("id")
         .eq("id", data.user.id)
         .single();
 
       if (profile) {
+        // já existe, vai direto pro destino
         return NextResponse.redirect(`${siteUrl}${returnTo}`);
       }
 
-      // cria registro no banco
-      await admin.from("users").insert({
+      // não existe → cria registro no banco
+      await supabase.from("users").insert({
         id: data.user.id,
         nome: name,
         telefone: phone,
@@ -69,6 +63,7 @@ export async function GET(request: Request) {
         email: data.user.email,
       });
 
+      // redireciona para tela inicial ou destino
       return NextResponse.redirect(`${siteUrl}${returnTo}`);
     }
 
