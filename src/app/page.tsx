@@ -151,7 +151,7 @@ export default function LandingPage() {
             moderna para candidatos e recrutadores.
           </p>
           <div className="animate-fade-up delay-300 mt-4 flex flex-col sm:flex-row items-center gap-4">
-            <button onClick={() => setModal(<RegistroModal hintedRole="member" returnTo="/registro/sucesso" />)}
+            <button onClick={() => setModal(<RegistroModal returnTo="/registro/sucesso" />)}
               className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-sm bg-launch-gold text-white text-sm font-semibold tracking-[0.12em] uppercase hover:bg-launch-gold-bright transition-all hover:scale-[1.02] shadow-[0_12px_32px_rgba(0,0,0,0.25)] ${focusRing}`}
             >
               Criar conta
@@ -226,7 +226,7 @@ export default function LandingPage() {
 
         <Reveal delayMs={160}>
           <div className="max-w-7xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <button onClick={() => setModal(<LoginModal callbackUrl="/feed" />)}
+            <button onClick={() => setModal(<LoginModal hintedRole="member" callbackUrl="/feed" />)}
               className={`group relative overflow-hidden rounded-sm p-8 min-h-[200px] flex flex-col justify-end text-white ${focusRing}`}
             >
               <div
@@ -294,7 +294,7 @@ export default function LandingPage() {
             {jobs.map((job, i) => (
               <button
               key={job.id}
-                onClick={() => setModal(<LoginModal callbackUrl={`/vagas/${job.id}`} />)}
+                onClick={() => setModal(<LoginModal hintedRole="recruiter" callbackUrl={`/vagas/${job.id}`} />)}
                 className={`job-panel snap-start shrink-0 w-[72vw] sm:w-[280px] lg:w-[300px] h-[420px] sm:h-[480px] rounded-sm relative group ${focusRing}`}
               >
                 <div

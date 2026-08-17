@@ -5,7 +5,14 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { useModal } from "@/components/providers/ModalProvider";
 
-function LoginModalContent({ callbackUrl = "/" }) {
+type Role = "member" | "recruiter";
+
+function LoginModalContent({
+  callbackUrl = "/",
+}: {
+  hintedRole?: Role | null;
+  callbackUrl?: string;
+}) {
   const { setModal } = useModal();
 
   function handleClose() {
@@ -23,7 +30,13 @@ function LoginModalContent({ callbackUrl = "/" }) {
   );
 }
 
-export default function LoginModal({ callbackUrl = "/" }) {
+export default function LoginModal({
+  hintedRole,
+  callbackUrl = "/",
+}: {
+  hintedRole?: Role | null;
+  callbackUrl?: string;
+}) {
   return (
     <Suspense fallback={null}>
       <LoginModalContent callbackUrl={callbackUrl} />
