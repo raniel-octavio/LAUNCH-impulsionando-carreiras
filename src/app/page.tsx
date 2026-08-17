@@ -114,10 +114,10 @@ export default function LandingPage() {
             <CenterAnchorLink href="#vagas" className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
               Vagas
             </CenterAnchorLink>
-            <Link prefetch={false} href="/login?callbackUrl=/feed" className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
+            <Link href="/login?callbackUrl=/feed" prefetch={false} className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
               Feed
             </Link>
-            <Link prefetch={false} href="/login?callbackUrl=/contatos" className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
+            <Link href="/login?callbackUrl=/contatos" prefetch={false} className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
               Contatos
             </Link>
           </nav>
