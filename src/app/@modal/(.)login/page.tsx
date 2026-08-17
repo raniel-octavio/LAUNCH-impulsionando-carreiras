@@ -1,25 +1,15 @@
+// LoginModal.tsx
 "use client";
-
 import { Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { useModal } from "@/components/providers/ModalProvider";
 
-function LoginModalContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+function LoginModalContent({ callbackUrl = "/" }) {
+  const { setModal } = useModal();
 
   function handleClose() {
-    // router.back() preserva a pilha de histórico que a interceptação de
-    // rotas do Next.js usa como referência. Usar router.replace() aqui
-    // quebra essa referência e faz o modal parar de abrir depois do
-    // primeiro fechamento.
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      router.replace(callbackUrl);
-    }
+    setModal(null);
   }
 
   return (
@@ -33,10 +23,10 @@ function LoginModalContent() {
   );
 }
 
-export default function LoginModal() {
+export default function LoginModal({ callbackUrl = "/" }) {
   return (
     <Suspense fallback={null}>
-      <LoginModalContent />
+      <LoginModalContent callbackUrl={callbackUrl} />
     </Suspense>
   );
 }

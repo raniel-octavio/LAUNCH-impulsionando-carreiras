@@ -3,6 +3,7 @@ import { Outfit, Syne } from "next/font/google";
 import { AppChrome } from "@/components/layout/AppChrome";
 import { Navbar } from "@/components/layout/Navbar";
 import { SupabaseAuthProvider } from "@/components/providers/SupabaseAuthProvider";
+import { ModalProvider } from "@/components/providers/ModalProvider"; // ← import aqui
 import "./globals.css";
 
 const outfit = Outfit({
@@ -37,8 +38,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-launch-void text-launch-white">
         <SupabaseAuthProvider>
-          <AppChrome navbar={<Navbar />}>{children}</AppChrome>
-          {modal}
+          <ModalProvider>
+            <AppChrome navbar={<Navbar />}>{children}</AppChrome>
+            {modal}
+          </ModalProvider>
         </SupabaseAuthProvider>
       </body>
     </html>

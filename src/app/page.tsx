@@ -1,3 +1,4 @@
+"use client";
 import { Suspense } from "react";
 import Link from "next/link";
 import {
@@ -14,6 +15,9 @@ import { Reveal } from "@/components/ui/Reveal";
 import { CenterAnchorLink } from "@/components/ui/CenterAnchorLink";
 import { getJobs } from "@/lib/store";
 import { NotRegisteredNotice } from "@/components/auth/NotRegisteredNotice";
+import { useModal } from "@/components/providers/ModalProvider";
+import LoginModal from "@/app/@modal/(.)login/page";
+import RegistroModal from "@/app/@modal/(.)registro/RegistroModalContent";
 
 const specialties = [
   { icon: Target, label: "MATCH INTELIGENTE" },
@@ -32,7 +36,7 @@ const focusRing =
 
 export default function LandingPage() {
   const jobs = getJobs().slice(0, 4);
-
+  const { setModal } = useModal();
   return (
     <div className="bg-launch-void text-launch-white overflow-x-hidden">
       <Suspense fallback={null}>
@@ -114,23 +118,21 @@ export default function LandingPage() {
             <CenterAnchorLink href="#vagas" className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
               Vagas
             </CenterAnchorLink>
-            <Link href="/login?callbackUrl=/feed" prefetch={false} className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
-              Feed
-            </Link>
-            <Link href="/login?callbackUrl=/contatos" prefetch={false} className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
-              Contatos
-            </Link>
+            <button onClick={() => setModal(<LoginModal callbackUrl="/feed" />)} className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
+              FEED
+            </button>
+            <button onClick={() => setModal(<LoginModal callbackUrl="/contatos" />)} className={`hover:text-white transition-colors rounded-sm ${focusRing}`}>
+              CONTATOS
+            </button>
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              href="/login" 
-              prefetch={false}
+            <button onClick={() => setModal(<LoginModal callbackUrl="/feed" />)}
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-sm border border-white/40 text-white text-[11px] font-semibold tracking-[0.14em] uppercase hover:bg-white hover:text-slate-900 transition-all ${focusRing}`}
             >
               Entrar
               <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            </button>
           </div>
         </header>
 
@@ -149,21 +151,17 @@ export default function LandingPage() {
             moderna para candidatos e recrutadores.
           </p>
           <div className="animate-fade-up delay-300 mt-4 flex flex-col sm:flex-row items-center gap-4">
-            <Link
-              href="/registro?role=member" 
-              prefetch={false}
+            <button onClick={() => setModal(<RegistroModal hintedRole="member" returnTo="/registro/sucesso" />)}
               className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-sm bg-launch-gold text-white text-sm font-semibold tracking-[0.12em] uppercase hover:bg-launch-gold-bright transition-all hover:scale-[1.02] shadow-[0_12px_32px_rgba(0,0,0,0.25)] ${focusRing}`}
             >
               Criar conta
               <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/login?callbackUrl=/vagas" 
+            </button>
+            <button onClick={() => setModal(<LoginModal callbackUrl="/vagas" />)}
               className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-sm border border-white/50 text-sm tracking-[0.12em] uppercase text-white hover:bg-white/10 transition-all ${focusRing}`}
-              prefetch={false}
             >
               Ver vagas
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -228,9 +226,7 @@ export default function LandingPage() {
 
         <Reveal delayMs={160}>
           <div className="max-w-7xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <Link
-              href="/login?callbackUrl=/vagas"
-              prefetch={false}
+            <button onClick={() => setModal(<LoginModal callbackUrl="/feed" />)}
               className={`group relative overflow-hidden rounded-sm p-8 min-h-[200px] flex flex-col justify-end text-white ${focusRing}`}
             >
               <div
@@ -251,11 +247,9 @@ export default function LandingPage() {
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
-            </Link>
+            </button>
 
-            <Link
-              href="/login?callbackUrl=/vagas"
-              prefetch={false}
+            <button onClick={() => setModal(<LoginModal callbackUrl="/feed" />)}
               className={`group relative overflow-hidden rounded-sm p-8 min-h-[200px] flex flex-col justify-end text-white ${focusRing}`}
             >
               <div
@@ -276,7 +270,7 @@ export default function LandingPage() {
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
-            </Link>
+            </button>
           </div>
         </Reveal>
       </section>
@@ -298,11 +292,9 @@ export default function LandingPage() {
         <Reveal delayMs={80}>
           <div className="max-w-7xl mx-auto flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-4 snap-x snap-mandatory">
             {jobs.map((job, i) => (
-              <Link
-              
+              <button
               key={job.id}
-                href="/login?callbackUrl=/vagas"
-                prefetch={false}
+                onClick={() => setModal(<LoginModal callbackUrl={`/vagas/${job.id}`} />)}
                 className={`job-panel snap-start shrink-0 w-[72vw] sm:w-[280px] lg:w-[300px] h-[420px] sm:h-[480px] rounded-sm relative group ${focusRing}`}
               >
                 <div
@@ -325,19 +317,17 @@ export default function LandingPage() {
                     <span className="text-xs text-white/70">{job.location}</span>
                   </div>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         </Reveal>
 
         <Reveal delayMs={160} className="text-center mt-10">
-          <Link
-            href="/login?callbackUrl=/vagas"
-            prefetch={false}
+          <button onClick={() => setModal(<LoginModal callbackUrl="/vagas" />)}
             className={`inline-flex items-center gap-2 text-xs tracking-[0.22em] uppercase text-white/70 hover:text-white transition-colors rounded-sm ${focusRing}`}
           >
             Ver todas as vagas <ArrowRight className="w-4 h-4" />
-          </Link>
+          </button>
         </Reveal>
       </section>
 
