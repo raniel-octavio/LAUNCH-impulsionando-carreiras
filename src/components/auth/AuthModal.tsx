@@ -4,6 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 
+// contador compartilhado entre todas as instâncias do modal —
+// só libera o scroll quando NENHUM modal estiver mais montado
+let openModalsCount = 0;
+
 export function AuthModal({
   eyebrow,
   title,
@@ -19,9 +23,14 @@ export function AuthModal({
   const hasClosedRef = useRef(false);
 
   useEffect(() => {
+    openModalsCount += 1;
     document.body.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = "";
+      openModalsCount = Math.max(0, openModalsCount - 1);
+      if (openModalsCount === 0) {
+        document.body.style.overflow = "";
+      }
     };
   }, []);
 
@@ -30,7 +39,6 @@ export function AuthModal({
     hasClosedRef.current = true;
 
     setIsClosing(true);
-    document.body.style.overflow = ""; // limpa já, não espera o unmount
     setTimeout(() => {
       onClose();
     }, 300);
