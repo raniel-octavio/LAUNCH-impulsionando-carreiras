@@ -17,7 +17,7 @@ import { getJobs } from "@/lib/store";
 import { NotRegisteredNotice } from "@/components/auth/NotRegisteredNotice";
 import { useModal } from "@/components/providers/ModalProvider";
 import LoginModal from "@/app/@modal/(.)login/page";
-import RegistroModal from "@/app/@modal/(.)registro/RegistroModalContent";
+import RegistroModal from "@/app/@modal/(.)registro/page";
 
 const specialties = [
   { icon: Target, label: "MATCH INTELIGENTE" },
