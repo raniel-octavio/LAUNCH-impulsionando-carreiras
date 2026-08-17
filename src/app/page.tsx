@@ -159,8 +159,8 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/login?callbackUrl=/vagas" 
-              prefetch={false}
               className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-sm border border-white/50 text-sm tracking-[0.12em] uppercase text-white hover:bg-white/10 transition-all ${focusRing}`}
+              prefetch={false}
             >
               Ver vagas
             </Link>
