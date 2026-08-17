@@ -78,6 +78,7 @@ export async function middleware(request: NextRequest) {
     if (!profile) {
       await supabase.auth.signOut();
       const homeUrl = new URL("/", request.url);
+      homeUrl.searchParams.set("notice", "nao-cadastrado");
       return NextResponse.redirect(homeUrl, {
         headers: response.headers,
       });

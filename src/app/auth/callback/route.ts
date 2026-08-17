@@ -18,12 +18,10 @@ export async function GET(request: Request) {
   const phone = searchParams.get("phone");
   const role = searchParams.get("role");
 
-  // Sem NEXT_PUBLIC_SITE_URL configurada, usa a origin real da requisição
   const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
   const siteUrl =
     rawSiteUrl && rawSiteUrl !== "undefined" ? rawSiteUrl : url.origin;
 
-  // Usa o construtor URL em vez de concatenar strings — garante URL absoluta válida
   function buildRedirect(path: string) {
     return NextResponse.redirect(new URL(path, siteUrl));
   }
@@ -32,10 +30,11 @@ export async function GET(request: Request) {
     return buildRedirect(`/auth/error?message=${encodeURIComponent(message)}`);
   }
 
-  function goToRegistro() {
-    const registroUrl = new URL("/registro", siteUrl);
-    registroUrl.searchParams.set("returnTo", returnTo);
-    return NextResponse.redirect(registroUrl);
+  function goToNaoCadastrado() {
+    const homeUrl = new URL("/", siteUrl);
+    homeUrl.searchParams.set("notice", "nao-cadastrado");
+    if (returnTo) homeUrl.searchParams.set("returnTo", returnTo);
+    return NextResponse.redirect(homeUrl);
   }
 
   try {
@@ -68,7 +67,6 @@ export async function GET(request: Request) {
       return errorRedirect(error?.message ?? "erro desconhecido");
     }
 
-    // verifica se já existe perfil
     const { data: profile, error: profileError } = await supabase
       .from("users")
       .select("id")
@@ -86,14 +84,12 @@ export async function GET(request: Request) {
       return buildRedirect(returnTo);
     }
 
-    // perfil não existe: se não veio "name" (ou "role"), essa não foi uma
-    // tentativa de registro (foi um login direto) → manda pro formulário
-    // em vez de tentar um insert que vai falhar por falta de dados.
+    // perfil não existe e não veio dado de registro → é um login,
+    // não um cadastro → mostra o aviso "usuário não cadastrado"
     if (!name || !role) {
-      return goToRegistro();
+      return goToNaoCadastrado();
     }
 
-    // não existe → cria registro no banco
     const { error: insertError } = await supabase.from("users").insert({
       id: data.user.id,
       name: name,

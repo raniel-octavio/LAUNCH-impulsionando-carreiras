@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -12,6 +13,7 @@ import { Starfield } from "@/components/ui/Starfield";
 import { Reveal } from "@/components/ui/Reveal";
 import { CenterAnchorLink } from "@/components/ui/CenterAnchorLink";
 import { getJobs } from "@/lib/store";
+import { NotRegisteredNotice } from "@/components/auth/NotRegisteredNotice";
 
 const specialties = [
   { icon: Target, label: "MATCH INTELIGENTE" },
@@ -33,6 +35,9 @@ export default function LandingPage() {
 
   return (
     <div className="bg-launch-void text-launch-white overflow-x-hidden">
+      <Suspense fallback={null}>
+        <NotRegisteredNotice />
+      </Suspense>
       {/* Animações e efeitos aeroespaciais compartilhados pela página */}
       <style>{`
         @keyframes lp-twinkle { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
