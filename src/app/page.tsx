@@ -124,9 +124,7 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
-               
-              href="/login"
-              prefetch={false}
+              href="/login" prefetch={false}
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-sm border border-white/40 text-white text-[11px] font-semibold tracking-[0.14em] uppercase hover:bg-white hover:text-slate-900 transition-all ${focusRing}`}
             >
               Entrar
@@ -151,16 +149,14 @@ export default function LandingPage() {
           </p>
           <div className="animate-fade-up delay-300 mt-4 flex flex-col sm:flex-row items-center gap-4">
             <Link
-              prefetch={false}
-              href="/registro?role=member"
+              href="/registro?role=member" prefetch={false}
               className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-sm bg-launch-gold text-white text-sm font-semibold tracking-[0.12em] uppercase hover:bg-launch-gold-bright transition-all hover:scale-[1.02] shadow-[0_12px_32px_rgba(0,0,0,0.25)] ${focusRing}`}
             >
               Criar conta
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              prefetch={false}
-              href="/login?callbackUrl=/vagas"
+              href="/login?callbackUrl=/vagas" prefetch={false}
               className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-sm border border-white/50 text-sm tracking-[0.12em] uppercase text-white hover:bg-white/10 transition-all ${focusRing}`}
             >
               Ver vagas
