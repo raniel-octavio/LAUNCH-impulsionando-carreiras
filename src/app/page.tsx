@@ -332,8 +332,8 @@ export default function LandingPage() {
 
         <Reveal delayMs={160} className="text-center mt-10">
           <Link
-            prefetch={false}
             href="/login?callbackUrl=/vagas"
+            prefetch={false}
             className={`inline-flex items-center gap-2 text-xs tracking-[0.22em] uppercase text-white/70 hover:text-white transition-colors rounded-sm ${focusRing}`}
           >
             Ver todas as vagas <ArrowRight className="w-4 h-4" />
