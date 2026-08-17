@@ -1,15 +1,17 @@
 "use client";
+
 import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { RegistroForm } from "@/components/auth/RegistroForm";
 import { useModal } from "@/components/providers/ModalProvider";
+
+type Role = "member" | "recruiter";
 
 function RegistroModalContent({
   hintedRole,
   returnTo,
 }: {
-  hintedRole?: "member" | "recruiter" | null;
+  hintedRole?: Role | null;
   returnTo?: string | null;
 }) {
   const { setModal } = useModal();
@@ -29,12 +31,11 @@ function RegistroModalContent({
   );
 }
 
-
 export default function RegistroModal({
   hintedRole,
   returnTo,
 }: {
-  hintedRole?: "member" | "recruiter" | null;
+  hintedRole?: Role | null;
   returnTo?: string | null;
 }) {
   return (
@@ -43,4 +44,3 @@ export default function RegistroModal({
     </Suspense>
   );
 }
-
