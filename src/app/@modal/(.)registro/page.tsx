@@ -1,34 +1,42 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { RegistroForm } from "@/components/auth/RegistroForm";
+import { useModal } from "@/components/providers/ModalProvider";
 
-export default function RegistroModal() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const role = searchParams.get("role");
-  const hintedRole = role === "member" || role === "recruiter" ? role : null;
+type Role = "member" | "recruiter";
 
-  function handleClose() {
-<<<<<<< HEAD
-    router.replace("/"); // ou outra rota padrão, se preferir
-  }
+function RegistroModalContent({
+  hintedRole,
+  returnTo,
+}: {
+  hintedRole?: Role | null;
+  returnTo?: string | null;
+}) {
+  const { setModal } = useModal();
 
   return (
     <AuthModal
       eyebrow="Crie sua conta"
       title="Complete seu cadastro"
-      onClose={handleClose}
+      onClose={() => setModal(null)}
     >
-=======
-    router.back();
-  }
-
-  return (
-    <AuthModal eyebrow="Crie sua conta" title="Complete seu cadastro" onClose={handleClose}>
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
-      <RegistroForm hintedRole={hintedRole} />
+      <RegistroForm hintedRole={hintedRole} returnTo={returnTo ?? "/"} />
     </AuthModal>
+  );
+}
+
+export default function RegistroModal({
+  hintedRole,
+  returnTo,
+}: {
+  hintedRole?: Role | null;
+  returnTo?: string | null;
+}) {
+  return (
+    <Suspense fallback={null}>
+      <RegistroModalContent hintedRole={hintedRole} returnTo={returnTo} />
+    </Suspense>
   );
 }

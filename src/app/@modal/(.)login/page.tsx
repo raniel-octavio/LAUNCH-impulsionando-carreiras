@@ -1,25 +1,22 @@
+// LoginModal.tsx
 "use client";
-
-<<<<<<< HEAD
-=======
 import { Suspense } from "react";
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
-import { useRouter, useSearchParams } from "next/navigation";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { useModal } from "@/components/providers/ModalProvider";
 
-<<<<<<< HEAD
-export default function LoginModal() {
-=======
-function LoginModalContent() {
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+type Role = "member" | "recruiter";
+
+function LoginModalContent({
+  callbackUrl = "/",
+}: {
+  hintedRole?: Role | null;
+  callbackUrl?: string;
+}) {
+  const { setModal } = useModal();
 
   function handleClose() {
-<<<<<<< HEAD
-    router.replace(callbackUrl);
+    setModal(null);
   }
 
   return (
@@ -28,25 +25,21 @@ function LoginModalContent() {
       title="Entre na sua conta"
       onClose={handleClose}
     >
-=======
-    router.back();
-  }
-
-  return (
-    <AuthModal eyebrow="Bem-vindo de volta" title="Entre na sua conta" onClose={handleClose}>
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
       <LoginForm callbackUrl={callbackUrl} />
     </AuthModal>
   );
 }
-<<<<<<< HEAD
-=======
 
-export default function LoginModal() {
+export default function LoginModal({
+  hintedRole,
+  callbackUrl = "/",
+}: {
+  hintedRole?: Role | null;
+  callbackUrl?: string;
+}) {
   return (
     <Suspense fallback={null}>
-      <LoginModalContent />
+      <LoginModalContent callbackUrl={callbackUrl} />
     </Suspense>
   );
 }
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a

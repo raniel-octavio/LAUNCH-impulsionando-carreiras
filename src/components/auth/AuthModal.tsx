@@ -4,6 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 
+// contador compartilhado entre todas as instâncias do modal —
+// só libera o scroll quando NENHUM modal estiver mais montado
+let openModalsCount = 0;
+
 export function AuthModal({
   eyebrow,
   title,
@@ -19,26 +23,22 @@ export function AuthModal({
   const hasClosedRef = useRef(false);
 
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") triggerClose();
-    }
-    document.addEventListener("keydown", handleKey);
+    openModalsCount += 1;
     document.body.style.overflow = "hidden";
+
     return () => {
-      document.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = "";
+      openModalsCount = Math.max(0, openModalsCount - 1);
+      if (openModalsCount === 0) {
+        document.body.style.overflow = "";
+      }
     };
   }, []);
 
   function triggerClose() {
     if (hasClosedRef.current) return;
     hasClosedRef.current = true;
-<<<<<<< HEAD
-=======
 
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
     setIsClosing(true);
-    document.body.style.overflow = ""; // limpa já, não espera o unmount
     setTimeout(() => {
       onClose();
     }, 300);
@@ -46,16 +46,9 @@ export function AuthModal({
 
   return (
     <div
-<<<<<<< HEAD
       className={`fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-6 py-6 overflow-y-auto bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
-=======
-      className={`fixed inset-0 z-50 flex items-center justify-center px-6 bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
         isClosing ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) triggerClose();
-      }}
     >
       <div
         className={`relative w-full max-w-md my-auto transform transition-all duration-300 ${

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-// app/login/page.tsx — fallback de página cheia, sem useAuthModal
-=======
 // app/login/page.tsx
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
 "use client";
 
 import { Suspense } from "react";
@@ -12,11 +8,7 @@ import { useSearchParams } from "next/navigation";
 
 const HERO_IMAGE = "/home.png";
 
-<<<<<<< HEAD
-export default function LoginPage() {
-=======
 function LoginPageContent() {
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
@@ -35,7 +27,9 @@ function LoginPageContent() {
       </header>
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-16">
-        <p className="text-[11px] tracking-[0.45em] uppercase text-sky-200/90 mb-3">Bem-vindo de volta</p>
+        <p className="text-[11px] tracking-[0.45em] uppercase text-sky-200/90 mb-3">
+          Bem-vindo de volta
+        </p>
         <h2 className="font-display text-2xl sm:text-3xl font-extrabold uppercase text-white mb-10">
           Entre na sua conta
         </h2>
@@ -45,8 +39,6 @@ function LoginPageContent() {
       </div>
     </div>
   );
-<<<<<<< HEAD
-=======
 }
 
 export default function LoginPage() {
@@ -55,5 +47,4 @@ export default function LoginPage() {
       <LoginPageContent />
     </Suspense>
   );
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
 }
