@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Syne } from "next/font/google";
 import { AppChrome } from "@/components/layout/AppChrome";
 import { Navbar } from "@/components/layout/Navbar";
+import { ModalProvider } from "@/components/providers/ModalProvider";
 import { SupabaseAuthProvider } from "@/components/providers/SupabaseAuthProvider";
 import "./globals.css";
 
@@ -37,8 +38,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-launch-void text-launch-white">
         <SupabaseAuthProvider>
-          <AppChrome navbar={<Navbar />}>{children}</AppChrome>
-          {modal}
+          <ModalProvider>
+            <AppChrome navbar={<Navbar />}>{children}</AppChrome>
+            {modal}
+          </ModalProvider>
         </SupabaseAuthProvider>
       </body>
     </html>

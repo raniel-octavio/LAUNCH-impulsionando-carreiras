@@ -1,29 +1,17 @@
-// LoginModal.tsx
 "use client";
 import { Suspense } from "react";
+import { useRouter } from "next/navigation";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { LoginForm } from "@/components/auth/LoginForm";
-import { useModal } from "@/components/providers/ModalProvider";
 
-type Role = "member" | "recruiter";
-
-function LoginModalContent({
-  callbackUrl = "/",
-}: {
-  hintedRole?: Role | null;
-  callbackUrl?: string;
-}) {
-  const { setModal } = useModal();
-
-  function handleClose() {
-    setModal(null);
-  }
+function LoginModalContent({ callbackUrl = "/" }: { callbackUrl?: string }) {
+  const router = useRouter();
 
   return (
     <AuthModal
       eyebrow="Bem-vindo de volta"
       title="Entre na sua conta"
-      onClose={handleClose}
+      onClose={() => router.back()}
     >
       <LoginForm callbackUrl={callbackUrl} />
     </AuthModal>
@@ -31,10 +19,9 @@ function LoginModalContent({
 }
 
 export default function LoginModal({
-  hintedRole,
   callbackUrl = "/",
 }: {
-  hintedRole?: Role | null;
+  hintedRole?: "member" | "recruiter" | null;
   callbackUrl?: string;
 }) {
   return (
