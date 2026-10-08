@@ -23,7 +23,6 @@ export const metadata: Metadata = {
     "Plataforma moderna de recrutamento com match de vagas, currículo, mensagens e networking profissional.",
 };
 
-// app/layout.tsx
 export default function RootLayout({
   children,
   modal,
@@ -32,19 +31,15 @@ export default function RootLayout({
   modal: React.ReactNode;
 }) {
   return (
-<<<<<<< HEAD
-    <html lang="pt-BR">
-      <body>
-        {children}
-        {modal}
-=======
-    <html lang="pt-BR" className={`${outfit.variable} ${syne.variable} h-full antialiased`}>
+    <html
+      lang="pt-BR"
+      className={`${outfit.variable} ${syne.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col bg-launch-void text-launch-white">
         <SupabaseAuthProvider>
           <AppChrome navbar={<Navbar />}>{children}</AppChrome>
           {modal}
         </SupabaseAuthProvider>
->>>>>>> a70221ea12e3549842bbcfa6703497876882ef4a
       </body>
     </html>
   );
